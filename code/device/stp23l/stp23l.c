@@ -59,11 +59,6 @@ static uint8_t stp23l_cmd = 0;
 static uint16_t stp23l_data_len = 0;
 static int stp23l_buf_idx = 0;
 
-void test()
-{
-    printf("%d\n", stp23l_parser_state);
-}
-
 // 校验和计算
 static uint8_t stp23l_calc_checksum(uint8_t sum_init,
                                     const uint8_t *data,

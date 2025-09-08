@@ -73,7 +73,6 @@ extern "C"
     int stp23l_pop_ack(stp23l_ack_result_t *out);
     void stp23l_feed_byte(uint8_t byte);
     void stp23l_receiver_callback(uart_index_enum uartn);
-    void test();
 #ifdef __cplusplus
 }
 #endif
