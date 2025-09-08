@@ -1,5 +1,5 @@
-#ifndef _STP23L_H_
-#define _STP23L_H_
+#ifndef _DEVICE_STP23L_H_
+#define _DEVICE_STP23L_H_
 
 #include "zf_driver_uart.h"
 
