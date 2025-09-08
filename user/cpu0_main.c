@@ -61,6 +61,7 @@ int core0_main(void)
         {
             printf("%d\n", frame.points[0].distance);
         }
+        // test();
         // 此处编写需要循环执行的代码
     }
 }

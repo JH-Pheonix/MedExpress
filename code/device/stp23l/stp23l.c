@@ -43,6 +43,7 @@ int stp23l_pop_frame(stp23l_frame_t *out)
     frame_queue_tail = (frame_queue_tail + 1) % STP23L_FRAME_QUEUE_SIZE;
     return 1;
 }
+
 int stp23l_pop_ack(stp23l_ack_result_t *out)
 {
     if (ack_queue_tail == ack_queue_head)
@@ -57,6 +58,11 @@ static int stp23l_preamble_count = 0;
 static uint8_t stp23l_cmd = 0;
 static uint16_t stp23l_data_len = 0;
 static int stp23l_buf_idx = 0;
+
+void test()
+{
+    printf("%d\n", stp23l_parser_state);
+}
 
 // 校验和计算
 static uint8_t stp23l_calc_checksum(uint8_t sum_init,
@@ -115,17 +121,51 @@ static int stp23l_send_cmd(uart_index_enum uartn,
 
 static int stp23l_parse_frame(const uint8_t *payload, int payload_len, stp23l_frame_t *frame_data)
 {
-    if (payload_len < (int)sizeof(stp23l_frame_t))
+    const int per_point_bytes = 2 + 2 + 4 + 1 + 4 + 2;              /* 15 */
+    const int expected_len = LIDAR_POINT_NUM * per_point_bytes + 4; /* +4 for timestamp */
+
+    if (payload == NULL || frame_data == NULL)
         return -1;
-    memcpy(frame_data, payload, sizeof(stp23l_frame_t));
+
+    if (payload_len < expected_len)
+        return -1;
+
+    for (int i = 0; i < LIDAR_POINT_NUM; ++i)
+    {
+        int p = i * per_point_bytes;
+
+        int16_t distance = (int16_t)((uint16_t)payload[p] | ((uint16_t)payload[p + 1] << 8));
+        uint16_t noise = (uint16_t)payload[p + 2] | ((uint16_t)payload[p + 3] << 8);
+        uint32_t peak = (uint32_t)payload[p + 4] | ((uint32_t)payload[p + 5] << 8) | ((uint32_t)payload[p + 6] << 16) | ((uint32_t)payload[p + 7] << 24);
+        uint8_t confidence = payload[p + 8];
+        uint32_t intg = (uint32_t)payload[p + 9] | ((uint32_t)payload[p + 10] << 8) | ((uint32_t)payload[p + 11] << 16) | ((uint32_t)payload[p + 12] << 24);
+        int16_t reftof = (int16_t)((uint16_t)payload[p + 13] | ((uint16_t)payload[p + 14] << 8));
+
+        frame_data->points[i].distance = distance;
+        frame_data->points[i].noise = noise;
+        frame_data->points[i].peak = peak;
+        frame_data->points[i].confidence = confidence;
+        frame_data->points[i].intg = intg;
+        frame_data->points[i].reftof = reftof;
+    }
+
+    int ts_off = LIDAR_POINT_NUM * per_point_bytes;
+    uint32_t timestamp = (uint32_t)payload[ts_off] | ((uint32_t)payload[ts_off + 1] << 8) | ((uint32_t)payload[ts_off + 2] << 16) | ((uint32_t)payload[ts_off + 3] << 24);
+    frame_data->timestamp = timestamp;
+
     return 0;
 }
 
 static int stp23l_parse_ack(const uint8_t *payload, int payload_len, stp23l_ack_result_t *ack)
 {
-    if (payload_len < (int)sizeof(stp23l_ack_result_t))
+    if (payload == NULL || ack == NULL)
         return -1;
-    memcpy(ack, payload, sizeof(stp23l_ack_result_t));
+
+    if (payload_len < 2)
+        return -1;
+
+    ack->ack_cmd_id = payload[0];
+    ack->result = payload[1];
     return 0;
 }
 

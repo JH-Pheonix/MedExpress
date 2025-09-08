@@ -160,7 +160,7 @@ IFX_INTERRUPT(uart1_rx_isr, UART1_INT_VECTAB_NUM, UART1_RX_INT_PRIO)
     interrupt_global_enable(0);       // 开启中断嵌套
     camera_uart_handler();            // 摄像头参数配置统一回调函数
     stp23l_receiver_callback(UART_1); // STP23L 接收回调函数
-    printf("rx\n");
+    // printf("rx\n");
 }
 
 // 串口2默认连接到无线转串口模块
