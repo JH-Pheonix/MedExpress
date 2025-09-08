@@ -1,12 +1,13 @@
 #ifndef _DEVICE_LCD_H_
 #define _DEVICE_LCD_H_
 
-#include "zf_common_headfile.h"
+#include "zf_device_tft180.h"
+#include "zf_common_font.h"
 
 #define DEFAULT_PEN_COLOR RGB565_MAGENTA
 #define DEFAULT_BACKGROUND_COLOR RGB565_WHITE
 #define CHAR_WIDTH 8
-#define CHAR_HEIGTH 16
+#define CHAR_HEIGHT 16
 
 #define TFT180_WIDTH_MAX 160
 #define TFT180_HEIGHT_MAX 128
@@ -26,13 +27,13 @@ extern "C"
                                vuint16 pen_color,
                                vuint16 background_color);
 
-    void lcd_show_vuint(vuint16 x, vuint16 y, vuint32 dat, vuint8 num);
-    void lcd_show_vuint_color(vuint16 x,
-                              vuint16 y,
-                              vuint32 dat,
-                              vuint8 num,
-                              vuint16 pen_color,
-                              vuint16 background_color);
+    void lcd_show_uint(vuint16 x, vuint16 y, vuint32 dat, vuint8 num);
+    void lcd_show_uint_color(vuint16 x,
+                             vuint16 y,
+                             vuint32 dat,
+                             vuint8 num,
+                             vuint16 pen_color,
+                             vuint16 background_color);
 
     void lcd_show_int(vuint16 x, vuint16 y, int32 dat, vuint8 num);
     void lcd_show_int_color(vuint16 x,

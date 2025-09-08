@@ -68,6 +68,7 @@ typedef struct
 extern "C"
 {
 #endif
+    void stp23l_init(void);
     int stp23l_send_reset_cmd(uart_index_enum uartn);
     int stp23l_get_version(uart_index_enum uartn);
     int stp23l_get_start(uart_index_enum uartn);

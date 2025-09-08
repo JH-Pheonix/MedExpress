@@ -1,8 +1,9 @@
 #ifndef _DEVICE_IMU_ADIS_H
 #define _DEVICE_IMU_ADIS_H
 
-#include "zf_common_headfile.h"
 #include "imu.h"
+#include "zf_driver_gpio.h"
+#include "zf_driver_spi.h"
 
 #define filter_set_high 0xDC06
 #define filter_set_low 0xDD00 // 滤波器B=6

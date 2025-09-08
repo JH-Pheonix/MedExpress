@@ -8,8 +8,8 @@ static vuint16 spi_get_data(vuint16);
 
 vuint8 adis_init(void)
 {
-    spi_init(ADIS_SPI, SPI_MODE3, ADIS_SPEED, ADIS_SCK, ADIS_MOSI, ADIS_MISO, SPI_CS_NULL);
-    gpio_init(ADIS_CS_PIN, GPO, GPIO_HIGH, GPO_PUSH_PULL);
+    spi_init(IMU_SPI_INDEX, SPI_MODE3, IMU_SPEED, IMU_SPC_PIN, IMU_MOSI_PIN, IMU_MISO_PIN, SPI_CS_NULL);
+    gpio_init(IMU_CS_PIN, GPO, GPIO_HIGH, GPO_PUSH_PULL);
     adis_reset();
     system_delay_ms(20);
     spi_get_data(filter_set_high);
@@ -92,8 +92,8 @@ void adis_reset()
 static vuint16 spi_get_data(vuint16 data_out)
 {
     vuint16 resp;
-    gpio_low(ADIS_CS_PIN);
-    spi_transfer_16bit(ADIS_SPI, &data_out, &resp, 1);
-    gpio_high(ADIS_CS_PIN);
+    gpio_low(IMU_CS_PIN);
+    spi_transfer_16bit(IMU_SPI_INDEX, &data_out, &resp, 1);
+    gpio_high(IMU_CS_PIN);
     return resp;
 }

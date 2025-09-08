@@ -1,7 +1,9 @@
 #ifndef _DEVICE_KEY_H_
 #define _DEVICE_KEY_H_
 
-#include "zf_common_headfile.h"
+#include "zf_common_typedef.h"
+#include "zf_driver_gpio.h"
+#include "pin.h"
 
 #define KEY_DOWN_TIME 10
 #define KEY_HOLD_TIME 11

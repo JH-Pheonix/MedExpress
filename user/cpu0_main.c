@@ -48,21 +48,10 @@ int core0_main(void)
     debug_init(); // 初始化默认调试串口
     // 此处编写用户代码 例如外设初始化代码等
 
-    uart_init(UART_1, 230400, UART1_TX_P02_2, UART1_RX_P02_3); // 摄像头串口初始化
-    uart_rx_interrupt(UART_1, 1);
-
     // 此处编写用户代码 例如外设初始化代码等
     cpu_wait_event_ready(); // 等待所有核心初始化完毕
     while (TRUE)
     {
-        // printf("ddd\n");
-        // 此处编写需要循环执行的代码
-        if (stp23l_pop_frame(&frame))
-        {
-            printf("%d\n", frame.points[0].distance);
-        }
-        // test();
-        // 此处编写需要循环执行的代码
     }
 }
 

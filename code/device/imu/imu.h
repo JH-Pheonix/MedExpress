@@ -1,7 +1,9 @@
 #ifndef _DEVICE_IMU_H_
 #define _DEVICE_IMU_H_
 
-#include "zf_common_headfile.h"
+#include "zf_device_imu660rb.h"
+#include "zf_device_imu660ra.h"
+#include "zf_device_imu963ra.h"
 
 typedef enum
 {

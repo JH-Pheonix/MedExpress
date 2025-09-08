@@ -1,5 +1,5 @@
 #include "stp23l.h"
-#include "zf_driver_uart.h"
+#include "pin.h"
 
 vuint8 receive_data_buffer[STP23L_RX_BUF_SIZE];
 vuint8 receive_data_count = 0;
@@ -347,4 +347,10 @@ void stp23l_receiver_callback(uart_index_enum uartn)
     {
         stp23l_feed_byte(byte);
     }
+}
+
+void stp23l_init(void)
+{
+    uart_init(STP23L_UART, STP23L_BAUDRATE, STP23L_TX_PIN, STP23L_RX_PIN);
+    uart_rx_interrupt(STP23L_UART, 1);
 }
