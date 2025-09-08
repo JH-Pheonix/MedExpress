@@ -4,9 +4,9 @@
 // 需要定义SPI相关函数，如果没有实现，暂时注释掉
 #define SPI_Transfer(x) // TODO: 实现SPI传输函数
 
-static uint16 spi_get_data(uint16);
+static vuint16 spi_get_data(vuint16);
 
-uint8 adis_init(void)
+vuint8 adis_init(void)
 {
     spi_init(ADIS_SPI, SPI_MODE3, ADIS_SPEED, ADIS_SCK, ADIS_MOSI, ADIS_MISO, SPI_CS_NULL);
     gpio_init(ADIS_CS_PIN, GPO, GPIO_HIGH, GPO_PUSH_PULL);
@@ -18,7 +18,7 @@ uint8 adis_init(void)
     system_delay_ms(400);
     spi_get_data(0x7200); // 设备识别码
     system_delay_us(20);
-    uint16 id = spi_get_data(0x7000); // 读取设备ID
+    vuint16 id = spi_get_data(0x7000); // 读取设备ID
     system_delay_us(20);
 
     if (id == 0x4079)
@@ -31,10 +31,10 @@ uint8 adis_init(void)
 
 void adis_read_data(imu_data_t *data)
 {
-    uint16 gy_z_high, gy_z_low, gy_x_high, gy_x_low, gy_y_high, gy_y_low;
-    uint16 acc_x_high, acc_x_low, acc_y_high, acc_y_low, acc_z_high, acc_z_low;
-    uint16 temp;
-    uint32 gy_x_raw, gy_y_raw, gy_z_raw, acc_x_raw, acc_y_raw, acc_z_raw;
+    vuint16 gy_z_high, gy_z_low, gy_x_high, gy_x_low, gy_y_high, gy_y_low;
+    vuint16 acc_x_high, acc_x_low, acc_y_high, acc_y_low, acc_z_high, acc_z_low;
+    vuint16 temp;
+    vuint32 gy_x_raw, gy_y_raw, gy_z_raw, acc_x_raw, acc_y_raw, acc_z_raw;
 
     gy_z_high = spi_get_data(GYZ_LOW); // 与ADIS16505通信获取数据
     system_delay_us(20);
@@ -64,12 +64,12 @@ void adis_read_data(imu_data_t *data)
     system_delay_us(20);
 
     // 合并为32位数据
-    gy_x_raw = ((uint32)gy_x_high << 16) | gy_x_low;
-    gy_y_raw = ((uint32)gy_y_high << 16) | gy_y_low;
-    gy_z_raw = ((uint32)gy_z_high << 16) | gy_z_low;
-    acc_x_raw = ((uint32)acc_x_high << 16) | acc_x_low;
-    acc_y_raw = ((uint32)acc_y_high << 16) | acc_y_low;
-    acc_z_raw = ((uint32)acc_z_high << 16) | acc_z_low;
+    gy_x_raw = ((vuint32)gy_x_high << 16) | gy_x_low;
+    gy_y_raw = ((vuint32)gy_y_high << 16) | gy_y_low;
+    gy_z_raw = ((vuint32)gy_z_high << 16) | gy_z_low;
+    acc_x_raw = ((vuint32)acc_x_high << 16) | acc_x_low;
+    acc_y_raw = ((vuint32)acc_y_high << 16) | acc_y_low;
+    acc_z_raw = ((vuint32)acc_z_high << 16) | acc_z_low;
 
     // 转换为具有物理意义的数据
     data->gyro_x = (float)(gy_x_raw * Kg / 65536);
@@ -89,9 +89,9 @@ void adis_reset()
     SPI_Transfer(RST2);
 }
 
-static uint16 spi_get_data(uint16 data_out)
+static vuint16 spi_get_data(vuint16 data_out)
 {
-    uint16 resp;
+    vuint16 resp;
     gpio_low(ADIS_CS_PIN);
     spi_transfer_16bit(ADIS_SPI, &data_out, &resp, 1);
     gpio_high(ADIS_CS_PIN);

@@ -14,6 +14,8 @@
 
 #define STP23L_RX_BUF_SIZE 256
 #define STP23L_TX_BUF_SIZE 64
+// header: 4*preamble + addr(1) + cmd(1) + offset(2) + len(2) = 10 bytes
+#define STP23L_HEADER_SIZE 10
 
 enum stp23l_parser_state_e
 {
@@ -66,9 +68,10 @@ typedef struct
 extern "C"
 {
 #endif
-
     int stp23l_send_reset_cmd(uart_index_enum uartn);
     int stp23l_get_version(uart_index_enum uartn);
+    int stp23l_get_start(uart_index_enum uartn);
+    int stp23l_send_stop_cmd(uart_index_enum uartn);
     int stp23l_pop_frame(stp23l_frame_t *out);
     int stp23l_pop_ack(stp23l_ack_result_t *out);
     void stp23l_feed_byte(uint8_t byte);

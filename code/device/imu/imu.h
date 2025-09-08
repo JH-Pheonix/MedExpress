@@ -17,7 +17,15 @@ typedef struct
     float gyro_x, gyro_y, gyro_z;    // 角速度 (°/s)
 } imu_data_t;
 
-void imu_init(imu_device_enum device);
-imu_data_t imu_get_data(void);
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+    void imu_init(imu_device_enum device);
+    imu_data_t imu_get_data(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

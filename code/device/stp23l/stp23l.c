@@ -59,6 +59,15 @@ static uint8_t stp23l_cmd = 0;
 static uint16_t stp23l_data_len = 0;
 static int stp23l_buf_idx = 0;
 
+// helper to reset parser state
+static void stp23l_reset_parser(void)
+{
+    stp23l_parser_state = S_WAIT_PREAMBLE;
+    stp23l_preamble_count = 0;
+    stp23l_buf_idx = 0;
+    stp23l_data_len = 0;
+}
+
 // 校验和计算
 static uint8_t stp23l_calc_checksum(uint8_t sum_init,
                                     const uint8_t *data,
@@ -91,6 +100,7 @@ static int stp23l_build_packet(uint8_t device_addr,
     out_buf[idx++] = (uint8_t)((data_len >> 8) & 0xFF);
     if (data_len && data)
     {
+        // ensure we don't copy from a NULL pointer
         memcpy(&out_buf[idx], data, data_len);
         idx += data_len;
     }
@@ -253,7 +263,7 @@ void stp23l_feed_byte(uint8_t byte)
             }
             else
             {
-                stp23l_parser_state = S_WAIT_PREAMBLE;
+                stp23l_reset_parser();
             }
         }
         break;
@@ -282,37 +292,37 @@ void stp23l_feed_byte(uint8_t byte)
     case S_LEN_HI:
         receive_data_buffer[stp23l_buf_idx++] = byte;
         stp23l_data_len |= ((uint16_t)byte << 8);
-        if (stp23l_data_len > STP23L_RX_BUF_SIZE - 11)
+        if (stp23l_data_len > (uint16_t)(STP23L_RX_BUF_SIZE - STP23L_HEADER_SIZE - 1))
         {
-            // payload too large for buffer, reset
-            stp23l_parser_state = S_WAIT_PREAMBLE;
-            stp23l_preamble_count = 0;
-            stp23l_buf_idx = 0;
-            stp23l_data_len = 0;
+            stp23l_reset_parser();
             break;
         }
         if (stp23l_data_len == 0)
-            stp23l_parser_state = S_CHECKSUM; // no payload
+            stp23l_parser_state = S_CHECKSUM;
         else
             stp23l_parser_state = S_PAYLOAD;
         break;
     case S_PAYLOAD:
-        receive_data_buffer[stp23l_buf_idx++] = byte;
-        if (stp23l_buf_idx >= 4 + 1 + 1 + 2 + 2 + stp23l_data_len) // header(4)+addr+cmd+offset(2)+len(2)+payload
+        if (stp23l_buf_idx < STP23L_RX_BUF_SIZE)
+        {
+            receive_data_buffer[stp23l_buf_idx++] = byte;
+        }
+        if (stp23l_buf_idx >= STP23L_HEADER_SIZE + stp23l_data_len)
         {
             stp23l_parser_state = S_CHECKSUM;
         }
         break;
     case S_CHECKSUM:
-        receive_data_buffer[stp23l_buf_idx++] = byte; // checksum at end
+        if (stp23l_buf_idx < STP23L_RX_BUF_SIZE)
+            receive_data_buffer[stp23l_buf_idx++] = byte;
 
+        if (stp23l_buf_idx > 4)
         {
             uint8_t calc = stp23l_calc_checksum(0, &receive_data_buffer[4], (int)(stp23l_buf_idx - 5));
             uint8_t recv = receive_data_buffer[stp23l_buf_idx - 1];
             if (calc == recv)
             {
-                // index 10 (4 preamble + addr(1)+cmd(1)+offset(2)+len(2))
-                int payload_offset = 10;
+                int payload_offset = STP23L_HEADER_SIZE;
                 int payload_len = stp23l_data_len;
                 if (payload_offset + payload_len <= stp23l_buf_idx - 1)
                 {
@@ -321,14 +331,10 @@ void stp23l_feed_byte(uint8_t byte)
             }
         }
 
-        // reset
-        stp23l_parser_state = S_WAIT_PREAMBLE;
-        stp23l_preamble_count = 0;
-        stp23l_buf_idx = 0;
-        stp23l_data_len = 0;
+        stp23l_reset_parser();
         break;
     default:
-        stp23l_parser_state = S_WAIT_PREAMBLE;
+        stp23l_reset_parser();
         break;
     }
 }

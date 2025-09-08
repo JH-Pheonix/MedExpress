@@ -1,4 +1,5 @@
 #include "key.h"
+#include "pin.h"
 
 KEY_MSG_t keymsg = {KEY_NONE, KEY_UP}; // 初始化为无按键状态
 static const gpio_pin_enum KEY_PTxn[KEY_NUM] = {MKEY_LIST};

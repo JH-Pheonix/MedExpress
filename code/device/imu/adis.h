@@ -25,9 +25,17 @@
 #define Kg 0.025
 #define ACC_Kg 0.00245
 
-// 函数声明
-vuint8 adis_init(void);
-void adis_read_data(imu_data_t *data);
-void adis_reset(void);
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+    // 函数声明
+    vuint8 adis_init(void);
+    void adis_read_data(imu_data_t *data);
+    void adis_reset(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
