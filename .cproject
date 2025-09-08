@@ -18,7 +18,7 @@
 							<option id="com.tasking.ctc.cpu.173331777" name="Processor" superClass="com.tasking.ctc.cpu" value="tc37x" valueType="string"/>
 							<option id="com.tasking.ctc.package.232764092" name="Device package" superClass="com.tasking.ctc.package" value="lfbga292" valueType="string"/>
 							<targetPlatform archList="all" binaryParser="com.tasking.managedbuilder.TASKING_ELF" id="com.infineon.aurix.buildsystem.managed.tasking.targetPlatform.291981121" isAbstract="false" osList="all" superClass="com.infineon.aurix.buildsystem.managed.tasking.targetPlatform"/>
-							<builder buildPath="${workspace_loc:/STP-23L}/Debug" id="com.infineon.aurix.buildsystem.managed.tasking.builder.1891516734" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="com.infineon.aurix.buildsystem.managed.tasking.builder"/>
+							<builder buildPath="${workspace_loc:/MedExpress}/Debug" id="com.infineon.aurix.buildsystem.managed.tasking.builder.1891516734" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="com.infineon.aurix.buildsystem.managed.tasking.builder"/>
 							<tool id="com.infineon.aurix.buildsystem.managed.tool.c.compiler.tasking.debug.1364839949" name="TASKING C/C++ Compiler" superClass="com.infineon.aurix.buildsystem.managed.tool.c.compiler.tasking.debug">
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.infineon.aurix.buildsystem.managed.c.compiler.tasking.include.661257944" name="Include paths (-I)" superClass="com.infineon.aurix.buildsystem.managed.c.compiler.tasking.include" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/}&quot;"/>
@@ -156,7 +156,7 @@
 							<option id="com.tasking.ctc.cpu.1842381293" name="Processor" superClass="com.tasking.ctc.cpu" value="tc37x" valueType="string"/>
 							<option id="com.tasking.ctc.package.1063504665" name="Device package" superClass="com.tasking.ctc.package" value="lfbga292" valueType="string"/>
 							<targetPlatform archList="all" binaryParser="com.tasking.managedbuilder.TASKING_ELF" id="com.infineon.aurix.buildsystem.managed.tasking.targetPlatform.945421098" isAbstract="false" osList="all" superClass="com.infineon.aurix.buildsystem.managed.tasking.targetPlatform"/>
-							<builder buildPath="${workspace_loc:/STP-23L}/Release" id="com.infineon.aurix.buildsystem.managed.tasking.builder.1396279126" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="com.infineon.aurix.buildsystem.managed.tasking.builder"/>
+							<builder buildPath="${workspace_loc:/MedExpress}/Release" id="com.infineon.aurix.buildsystem.managed.tasking.builder.1396279126" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="com.infineon.aurix.buildsystem.managed.tasking.builder"/>
 							<tool id="com.infineon.aurix.buildsystem.managed.tool.c.compiler.tasking.release.1716738242" name="TASKING C/C++ Compiler" superClass="com.infineon.aurix.buildsystem.managed.tool.c.compiler.tasking.release">
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.infineon.aurix.buildsystem.managed.c.compiler.tasking.include.1548359134" name="Include paths" superClass="com.infineon.aurix.buildsystem.managed.c.compiler.tasking.include" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/}&quot;"/>
@@ -475,7 +475,7 @@
 						<toolChain id="com.infineon.aurix.buildsystem.managed.external.gcc.configuration.debug.1191174632" name="AURIX External GCC Toolchain" superClass="com.infineon.aurix.buildsystem.managed.external.gcc.configuration.debug">
 							<option id="com.infineon.aurix.buildsystem.managed.gcc.c.option.mtc.614851520" name="Instruction set" superClass="com.infineon.aurix.buildsystem.managed.gcc.c.option.mtc" value="com.infineon.aurix.buildsystem.managed.gcc.c.option.mtc.mtc162" valueType="enumerated"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.infineon.aurix.buildsystem.managed.gcc.targetPlatform.382521578" isAbstract="false" osList="all" superClass="com.infineon.aurix.buildsystem.managed.gcc.targetPlatform"/>
-							<builder buildPath="${workspace_loc:/STP-23L}/External GCC - Debug" id="com.infineon.aurix.buildsystem.managed.gcc.builder.895267329" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="com.infineon.aurix.buildsystem.managed.gcc.builder"/>
+							<builder buildPath="${workspace_loc:/MedExpress}/External GCC - Debug" id="com.infineon.aurix.buildsystem.managed.gcc.builder.895267329" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="com.infineon.aurix.buildsystem.managed.gcc.builder"/>
 							<tool id="com.infineon.aurix.buildsystem.managed.tool.c.compiler.1595153520" name="AURIX GCC Compiler" superClass="com.infineon.aurix.buildsystem.managed.tool.c.compiler">
 								<option defaultValue="gnu.c.optimization.level.none" id="com.infineon.aurix.buildsystem.managed.tool.c.compiler.option.optimization.level.917898138" name="Optimization Level" superClass="com.infineon.aurix.buildsystem.managed.tool.c.compiler.option.optimization.level" valueType="enumerated"/>
 								<option defaultValue="gnu.c.debugging.level.max" id="com.infineon.aurix.buildsystem.managed.tool.c.compiler.option.debugging.level.1561945363" name="Debug Level" superClass="com.infineon.aurix.buildsystem.managed.tool.c.compiler.option.debugging.level" valueType="enumerated"/>
@@ -804,7 +804,7 @@
 						<toolChain id="com.infineon.aurix.buildsystem.managed.external.gcc.configuration.release.586432819" name="AURIX External GCC Toolchain" superClass="com.infineon.aurix.buildsystem.managed.external.gcc.configuration.release">
 							<option id="com.infineon.aurix.buildsystem.managed.gcc.c.option.mtc.789591739" name="Instruction set" superClass="com.infineon.aurix.buildsystem.managed.gcc.c.option.mtc" value="com.infineon.aurix.buildsystem.managed.gcc.c.option.mtc.mtc162" valueType="enumerated"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.infineon.aurix.buildsystem.managed.gcc.targetPlatform.1476269170" isAbstract="false" osList="all" superClass="com.infineon.aurix.buildsystem.managed.gcc.targetPlatform"/>
-							<builder buildPath="${workspace_loc:/STP-23L}/External GCC - Release" id="com.infineon.aurix.buildsystem.managed.gcc.builder.469656845" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="com.infineon.aurix.buildsystem.managed.gcc.builder"/>
+							<builder buildPath="${workspace_loc:/MedExpress}/External GCC - Release" id="com.infineon.aurix.buildsystem.managed.gcc.builder.469656845" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="com.infineon.aurix.buildsystem.managed.gcc.builder"/>
 							<tool id="com.infineon.aurix.buildsystem.managed.tool.c.compiler.1331874000" name="AURIX GCC Compiler" superClass="com.infineon.aurix.buildsystem.managed.tool.c.compiler">
 								<option defaultValue="gnu.c.optimization.level.most" id="com.infineon.aurix.buildsystem.managed.tool.c.compiler.option.optimization.level.317821261" name="Optimization Level" superClass="com.infineon.aurix.buildsystem.managed.tool.c.compiler.option.optimization.level" valueType="enumerated"/>
 								<option defaultValue="gnu.c.debugging.level.none" id="com.infineon.aurix.buildsystem.managed.tool.c.compiler.option.debugging.level.466407144" name="Debug Level" superClass="com.infineon.aurix.buildsystem.managed.tool.c.compiler.option.debugging.level" valueType="enumerated"/>
@@ -1117,7 +1117,7 @@
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="STP-23L.com.infineon.aurix.buildsystem.managed.projectType.1303461218" name="AURIX Project" projectType="com.infineon.aurix.buildsystem.managed.projectType"/>
+		<project id="MedExpress.com.infineon.aurix.buildsystem.managed.projectType.1303461218" name="AURIX Project" projectType="com.infineon.aurix.buildsystem.managed.projectType"/>
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
@@ -1145,16 +1145,16 @@
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="External GCC - Debug">
-			<resource resourceType="PROJECT" workspacePath="/STP-23L"/>
+			<resource resourceType="PROJECT" workspacePath="/MedExpress"/>
 		</configuration>
 		<configuration configurationName="External GCC - Release">
-			<resource resourceType="PROJECT" workspacePath="/STP-23L"/>
+			<resource resourceType="PROJECT" workspacePath="/MedExpress"/>
 		</configuration>
 		<configuration configurationName="Debug">
-			<resource resourceType="PROJECT" workspacePath="/STP-23L"/>
+			<resource resourceType="PROJECT" workspacePath="/MedExpress"/>
 		</configuration>
 		<configuration configurationName="Release">
-			<resource resourceType="PROJECT" workspacePath="/STP-23L"/>
+			<resource resourceType="PROJECT" workspacePath="/MedExpress"/>
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
