@@ -172,6 +172,39 @@ IFX_INTERRUPT(uart1_rx_isr, UART1_INT_VECTAB_NUM, UART1_RX_INT_PRIO)
 
 说明：`stp23l` 实现了协议解析并把有效的 frame/ack 推入内部队列，用户通过 `stp23l_pop_frame()` / `stp23l_pop_ack()` 拉取并处理。
 
+## 5. Motor（电机）
+
+每个电机分配一个实体，即`motor_obj_t`，实体中的信息有：
+
+```c
+typedef struct
+{
+    pwm_channel_enum pwm_pin;
+    gpio_pin_enum dir_pin;
+    vuint32 freq;
+    vuint8 status;
+    vuint32 deadzone;
+} motor_obj_t;
+```
+
+我们这样初始化电机：
+
+```c
+#include "pin.h"
+#include "motor.h"
+
+motor_obj_t motor1;
+void system_init() {
+	motor1 = motor_init(pwm_pin, dir_pin, freq, deadzone);
+}
+```
+
+然后将 motor1 作为一个全局变量，后续需要修改其状态的时候我们只需要传入这个实体即可：
+
+```c
+motor_set_pwm(motor1, 9999);
+```
+
 ## 调试与排错建议
 
 -   若设备无法工作，先检查 `pin.h` 中的管脚定义是否与硬件一致。
