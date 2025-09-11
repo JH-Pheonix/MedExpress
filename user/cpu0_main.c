@@ -37,6 +37,7 @@
 #include "imu.h"
 #include "lcd.h"
 #include "key.h"
+#include "Attitude.h"
 
 #pragma section all "cpu0_dsram"
 // 将本语句与#pragma section all restore语句之间的全局变量都放在CPU0的RAM中
@@ -44,7 +45,7 @@
 // 本例程是开源库空工程 可用作移植或者测试各类内外设
 // 本例程是开源库空工程 可用作移植或者测试各类内外设
 // 本例程是开源库空工程 可用作移植或者测试各类内外设
-
+imu_data_t imu_data;
 // **************************** 代码区域 ****************************
 int core0_main(void)
 {
@@ -53,14 +54,15 @@ int core0_main(void)
     // 此处编写用户代码 例如外设初始化代码等
 
     system_init(); // 系统初始化
+
     // 此处编写用户代码 例如外设初始化代码等
     cpu_wait_event_ready(); // 等待所有核心初始化完毕
     while (TRUE)
     {
-        lcd_show_string(0, 2, "Key pressed:");
-        lcd_show_int(10, 2, keymsg.key, 2);
-        lcd_show_string(0, 3, "Status:");
-        lcd_show_int(10, 3, keymsg.status, 2);
+        imu_data = imu_get_data();
+        attitude_cal();
+        printf("roll:%f ", g_euler_angle.roll);
+        // printf("%f\n", imu_data.accel_x);
     }
 }
 

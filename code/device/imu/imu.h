@@ -5,6 +5,8 @@
 #include "zf_device_imu660ra.h"
 #include "zf_device_imu963ra.h"
 
+#define gyroscope_threshold 5
+
 typedef enum
 {
     IMU_DEVICE_660RA,
@@ -25,6 +27,8 @@ extern "C"
 #endif
     void imu_init(imu_device_enum device);
     imu_data_t imu_get_data(void);
+    void imu_remove_offset(imu_data_t *data);
+    void imu_init_offset(void);
 
 #ifdef __cplusplus
 }

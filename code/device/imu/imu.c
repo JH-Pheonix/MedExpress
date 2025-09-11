@@ -1,6 +1,8 @@
 #include "imu.h"
 #include "adis.h"
 
+float gyroOffset[3] = {0.0f, 0.0f, 0.0f};
+
 static imu_device_enum curr_device;
 static bool imu_state = 1; // 表示初始化状态
 
@@ -59,39 +61,39 @@ imu_data_t imu_get_data(void)
         imu660ra_get_acc();
         imu660ra_get_gyro();
 
-        data.accel_x = imu660ra_acc_x;
-        data.accel_y = imu660ra_acc_y;
-        data.accel_z = imu660ra_acc_z;
+        data.accel_x = imu660ra_acc_transition(imu660ra_acc_x) * 9.7936f;
+        data.accel_y = imu660ra_acc_transition(imu660ra_acc_y) * 9.7936f;
+        data.accel_z = imu660ra_acc_transition(imu660ra_acc_z) * 9.7936f;
 
-        data.gyro_x = imu660ra_gyro_x;
-        data.gyro_y = imu660ra_gyro_y;
-        data.gyro_z = imu660ra_gyro_z;
+        data.gyro_x = imu660ra_gyro_transition(imu660ra_gyro_x) * 0.0174533f;
+        data.gyro_y = imu660ra_gyro_transition(imu660ra_gyro_y) * 0.0174533f;
+        data.gyro_z = imu660ra_gyro_transition(imu660ra_gyro_z) * 0.0174533f;
         break;
 
     case IMU_DEVICE_660RB:
         imu660rb_get_acc();
         imu660rb_get_gyro();
 
-        data.accel_x = imu660rb_acc_x;
-        data.accel_y = imu660rb_acc_y;
-        data.accel_z = imu660rb_acc_z;
+        data.accel_x = imu660rb_acc_transition(imu660rb_acc_x) * 9.7936f;
+        data.accel_y = imu660rb_acc_transition(imu660rb_acc_y) * 9.7936f;
+        data.accel_z = imu660rb_acc_transition(imu660rb_acc_z) * 9.7936f;
 
-        data.gyro_x = imu660rb_gyro_x;
-        data.gyro_y = imu660rb_gyro_y;
-        data.gyro_z = imu660rb_gyro_z;
+        data.gyro_x = imu660rb_gyro_transition(imu660rb_gyro_x) * 0.0174533f;
+        data.gyro_y = imu660rb_gyro_transition(imu660rb_gyro_y) * 0.0174533f;
+        data.gyro_z = imu660rb_gyro_transition(imu660rb_gyro_z) * 0.0174533f;
         break;
 
     case IMU_DEVICE_963RA:
         imu963ra_get_acc();
         imu963ra_get_gyro();
 
-        data.accel_x = imu963ra_acc_x;
-        data.accel_y = imu963ra_acc_y;
-        data.accel_z = imu963ra_acc_z;
+        data.accel_x = imu963ra_acc_transition(imu963ra_acc_x) * 9.7936f;
+        data.accel_y = imu963ra_acc_transition(imu963ra_acc_y) * 9.7936f;
+        data.accel_z = imu963ra_acc_transition(imu963ra_acc_z) * 9.7936f;
 
-        data.gyro_x = imu963ra_gyro_x;
-        data.gyro_y = imu963ra_gyro_y;
-        data.gyro_z = imu963ra_gyro_z;
+        data.gyro_x = imu963ra_gyro_transition(imu963ra_gyro_x) * 0.0174533f;
+        data.gyro_y = imu963ra_gyro_transition(imu963ra_gyro_y) * 0.0174533f;
+        data.gyro_z = imu963ra_gyro_transition(imu963ra_gyro_z) * 0.0174533f;
         break;
 
     case IMU_DEVICE_ADIS16505:
@@ -104,4 +106,33 @@ imu_data_t imu_get_data(void)
     }
 
     return data;
+}
+
+void imu_init_offset()
+{
+    imu_data_t data;
+    for (int i = 0; i < 2000; i++)
+    {
+        data = imu_get_data();
+        if (fabsf(data.gyro_x) + fabsf(data.gyro_y) + fabsf(data.gyro_z) >
+            gyroscope_threshold)
+        {
+            i--;
+            continue;
+        }
+        gyroOffset[0] += data.gyro_x;
+        gyroOffset[1] += data.gyro_y;
+        gyroOffset[2] += data.gyro_z;
+        system_delay_ms(1);
+    }
+    gyroOffset[0] *= 0.0005f;
+    gyroOffset[1] *= 0.0005f;
+    gyroOffset[2] *= 0.0005f;
+}
+
+void imu_remove_offset(imu_data_t *data)
+{
+    data->gyro_x -= gyroOffset[0];
+    data->gyro_y -= gyroOffset[1];
+    data->gyro_z -= gyroOffset[2];
 }
