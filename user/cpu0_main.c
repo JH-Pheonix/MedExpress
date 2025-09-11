@@ -38,6 +38,7 @@
 #include "lcd.h"
 #include "key.h"
 #include "Attitude.h"
+#include "pid_control.h"
 
 #pragma section all "cpu0_dsram"
 // 将本语句与#pragma section all restore语句之间的全局变量都放在CPU0的RAM中
@@ -45,7 +46,6 @@
 // 本例程是开源库空工程 可用作移植或者测试各类内外设
 // 本例程是开源库空工程 可用作移植或者测试各类内外设
 // 本例程是开源库空工程 可用作移植或者测试各类内外设
-imu_data_t imu_data;
 // **************************** 代码区域 ****************************
 int core0_main(void)
 {
@@ -59,9 +59,8 @@ int core0_main(void)
     cpu_wait_event_ready(); // 等待所有核心初始化完毕
     while (TRUE)
     {
-        imu_data = imu_get_data();
-        attitude_cal();
-        printf("roll:%f ", g_euler_angle.roll);
+        lcd_show_float(0, 0, g_euler_angle.yaw, 4, 3);
+        lcd_show_float(0, 1, diff, 3, 3);
         // printf("%f\n", imu_data.accel_x);
     }
 }

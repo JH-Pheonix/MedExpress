@@ -1,7 +1,7 @@
 #ifndef Mahony_ATTITUDE_H
 #define Mahony_ATTITUDE_H
 
-#include "zf_common_headfile.h"
+#include "zf_common_typedef.h"
 
 typedef struct
 {
@@ -9,10 +9,6 @@ typedef struct
     float pitch;
     float yaw;
 } euler_angle_t;
-
-struct Control_Turn_Manual_Params;
-struct Control_Target;
-struct Velocity_Motor;
 
 typedef enum
 {

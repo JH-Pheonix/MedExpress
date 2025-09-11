@@ -2,9 +2,9 @@
 #include "common.h"
 
 void pid_init(pid_type_def *pid,
-              const float32 PID[3],
-              float32 max_out,
-              float32 max_iout)
+              const float PID[3],
+              float max_out,
+              float max_iout)
 {
     if (pid == NULL || PID == NULL)
     {
@@ -21,7 +21,7 @@ void pid_init(pid_type_def *pid,
         pid->Dout = pid->out = 0.0f;
 }
 
-float32 pid_position(pid_type_def *pid, float32 ref, float32 set)
+float pid_position(pid_type_def *pid, float ref, float set)
 {
     if (pid == NULL)
     {
@@ -44,7 +44,7 @@ float32 pid_position(pid_type_def *pid, float32 ref, float32 set)
     return pid->out;
 }
 
-float32 pid_delta(pid_type_def *pid, float32 ref, float32 set)
+float pid_delta(pid_type_def *pid, float ref, float set)
 {
     if (pid == NULL)
     {

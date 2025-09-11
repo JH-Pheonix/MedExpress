@@ -15,7 +15,7 @@ void attitude_init(Attitude_algorithm algo)
     switch (current_algorithm)
     {
     case ATTITUDE_EKF:
-        IMU_QuaternionEKF_Init(10, 0.001, 10000000, 1, 0.001f, 0);
+        IMU_QuaternionEKF_Init(10, 0.001, 10000000, 1, 0.002f, 0);
         break;
     case ATTITUDE_MADGWICK:
         MadgwickAHRS_init();
@@ -79,7 +79,7 @@ void attitude_cal()
         break;
     }
 
-    g_euler_angle.yaw = 360.0f - g_euler_angle.yaw; // 0~360
-    g_euler_angle.yaw > 360 ? (g_euler_angle.yaw -= 360)
-                            : g_euler_angle.yaw; // 0~360
+    // g_euler_angle.yaw = 360.0f - g_euler_angle.yaw; // 0~360
+    // g_euler_angle.yaw > 360 ? (g_euler_angle.yaw -= 360)
+    //                         : g_euler_angle.yaw; // 0~360
 }
