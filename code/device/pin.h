@@ -6,10 +6,11 @@
 // IMU pin
 #define IMU_SPI_INDEX (SPI_0)
 #define IMU_CS_PIN (P20_13)
-#define IMU_RST_PIN (P20_12)
 #define IMU_SPC_PIN (SPI0_SCLK_P20_11)
 #define IMU_MOSI_PIN (SPI0_MOSI_P20_14)
 #define IMU_MISO_PIN (SPI0_MISO_P20_12)
+
+#define IMU_RST_PIN (P20_12)
 #define IMU_SPEED (2 * 1000 * 1000)
 
 // tft180 pin
