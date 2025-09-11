@@ -11,14 +11,14 @@ void key_init_rewrite(KEY_e key)
 {
     if (key < KEY_NUM)
     {
-        gpio_init(KEY_PTxn[key], GPI, 0, GPO_PUSH_PULL);
+        gpio_init(KEY_PTxn[key], GPI, 0, GPI_PULL_UP);
     }
     else
     {
         key = KEY_NUM;
         while (key--)
         {
-            gpio_init(KEY_PTxn[key], GPI, 0, GPO_PUSH_PULL);
+            gpio_init(KEY_PTxn[key], GPI, 0, GPI_PULL_UP);
         }
     }
 }
@@ -177,10 +177,8 @@ void key_IRQHandler()
     }
 }
 
-void key_callback_func(vuint32 event, void *ptr)
+void key_callback_func()
 {
-    *((vuint8 *)ptr) = 1;
-
     key_IRQHandler();
     while (key_get_msg(&keymsg))
         ;

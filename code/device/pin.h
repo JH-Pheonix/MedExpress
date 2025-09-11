@@ -26,7 +26,7 @@
 // key pin
 //                A    , C    , B    , D    , CENTER
 #define MKEY_NAME KEY_U, KEY_D, KEY_L, KEY_R, KEY_B
-#define MKEY_LIST P20_6, P20_7, P11_2, P11_3, P11_4
+#define MKEY_LIST P11_6, P11_9, P11_3, P11_10, P11_11
 
 // stp23l pin
 #define STP23L_UART (UART_1)

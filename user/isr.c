@@ -34,6 +34,7 @@
  ********************************************************************************************************************/
 
 #include "stp23l.h"
+#include "key.h"
 #include "isr_config.h"
 #include "isr.h"
 
@@ -45,6 +46,7 @@ IFX_INTERRUPT(cc60_pit_ch0_isr, CCU6_0_CH0_INT_VECTAB_NUM, CCU6_0_CH0_ISR_PRIORI
 {
     interrupt_global_enable(0); // 开启中断嵌套
     pit_clear_flag(CCU60_CH0);
+    key_callback_func();
 }
 
 IFX_INTERRUPT(cc60_pit_ch1_isr, CCU6_0_CH1_INT_VECTAB_NUM, CCU6_0_CH1_ISR_PRIORITY)
