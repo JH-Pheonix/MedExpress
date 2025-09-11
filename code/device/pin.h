@@ -4,12 +4,12 @@
 #include "zf_common_headfile.h"
 
 // IMU pin
-#define IMU_SPI_INDEX (SPI_1)
+#define IMU_SPI_INDEX (SPI_0)
 #define IMU_CS_PIN (P20_13)
 #define IMU_RST_PIN (P20_12)
-#define IMU_SPC_PIN (SPI1_SCLK_P10_2)
-#define IMU_MOSI_PIN (SPI1_MOSI_P10_1)
-#define IMU_MISO_PIN (SPI1_MISO_P11_3)
+#define IMU_SPC_PIN (SPI0_SCLK_P20_11)
+#define IMU_MOSI_PIN (SPI0_MOSI_P20_14)
+#define IMU_MISO_PIN (SPI0_MISO_P20_12)
 #define IMU_SPEED (2 * 1000 * 1000)
 
 // tft180 pin
