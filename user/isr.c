@@ -39,6 +39,7 @@
 #include "isr.h"
 #include "Attitude.h"
 #include "pid_control.h"
+#include "init.h"
 
 // 对于TC系列默认是不支持中断嵌套的，希望支持中断嵌套需要在中断内使用 interrupt_global_enable(0); 来开启中断嵌套
 // 简单点说实际上进入中断后TC系列的硬件自动调用了 interrupt_global_disable(); 来拒绝响应任何的中断，因此需要我们自己手动调用 interrupt_global_enable(0); 来开启中断的响应。
@@ -94,8 +95,6 @@ IFX_INTERRUPT(exti_ch1_ch5_isr, EXTI_CH1_CH5_INT_VECTAB_NUM, EXTI_CH1_CH5_INT_PR
     if (exti_flag_get(ERU_CH1_REQ10_P14_3)) // 通道1中断
     {
         exti_flag_clear(ERU_CH1_REQ10_P14_3);
-
-        tof_module_exti_handler(); // ToF 模块 INT 更新中断
     }
 
     if (exti_flag_get(ERU_CH5_REQ1_P15_8)) // 通道5中断
@@ -124,7 +123,6 @@ IFX_INTERRUPT(exti_ch3_ch7_isr, EXTI_CH3_CH7_INT_VECTAB_NUM, EXTI_CH3_CH7_INT_PR
     if (exti_flag_get(ERU_CH3_REQ6_P02_0)) // 通道3中断
     {
         exti_flag_clear(ERU_CH3_REQ6_P02_0);
-        camera_vsync_handler(); // 摄像头触发采集统一回调函数
     }
     if (exti_flag_get(ERU_CH7_REQ16_P15_1)) // 通道7中断
     {
@@ -137,7 +135,6 @@ IFX_INTERRUPT(exti_ch3_ch7_isr, EXTI_CH3_CH7_INT_VECTAB_NUM, EXTI_CH3_CH7_INT_PR
 IFX_INTERRUPT(dma_ch5_isr, DMA_INT_VECTAB_NUM, DMA_INT_PRIO)
 {
     interrupt_global_enable(0); // 开启中断嵌套
-    camera_dma_handler();       // 摄像头采集完成统一回调函数
 }
 // **************************** DMA中断函数 ****************************
 
@@ -217,7 +214,8 @@ IFX_INTERRUPT(uart6_tx_isr, UART6_INT_VECTAB_NUM, UART6_TX_INT_PRIO)
 
 IFX_INTERRUPT(uart6_rx_isr, UART6_INT_VECTAB_NUM, UART6_RX_INT_PRIO)
 {
-    interrupt_global_enable(0); // 开启中断嵌套
+    interrupt_global_enable(0);        // 开启中断嵌套
+    stp23l_receiver_callback(&lidar2); // STP23L激光雷达串口回调
 }
 
 IFX_INTERRUPT(uart8_tx_isr, UART8_INT_VECTAB_NUM, UART8_TX_INT_PRIO)
@@ -227,7 +225,8 @@ IFX_INTERRUPT(uart8_tx_isr, UART8_INT_VECTAB_NUM, UART8_TX_INT_PRIO)
 
 IFX_INTERRUPT(uart8_rx_isr, UART8_INT_VECTAB_NUM, UART8_RX_INT_PRIO)
 {
-    interrupt_global_enable(0); // 开启中断嵌套
+    interrupt_global_enable(0);        // 开启中断嵌套
+    stp23l_receiver_callback(&lidar1); // STP23L激光雷达串口回调
 }
 
 IFX_INTERRUPT(uart9_tx_isr, UART9_INT_VECTAB_NUM, UART9_TX_INT_PRIO)

@@ -6,6 +6,7 @@
 #include "key.h"
 #include "lcd.h"
 #include "Attitude.h"
+#include "stp23l.h"
 
 void system_init(void);
 
@@ -13,5 +14,8 @@ extern motor_obj_t motor1;
 extern motor_obj_t motor2;
 extern motor_obj_t motor3;
 extern motor_obj_t motor4;
+
+extern stp23l_obj_t lidar1;
+extern stp23l_obj_t lidar2;
 
 #endif

@@ -39,10 +39,13 @@
 #include "key.h"
 #include "Attitude.h"
 #include "pid_control.h"
+#include "stp23l.h"
 
 #pragma section all "cpu0_dsram"
 // 将本语句与#pragma section all restore语句之间的全局变量都放在CPU0的RAM中
 
+stp23l_frame_t lidar1_frame;
+stp23l_frame_t lidar2_frame;
 // 本例程是开源库空工程 可用作移植或者测试各类内外设
 // 本例程是开源库空工程 可用作移植或者测试各类内外设
 // 本例程是开源库空工程 可用作移植或者测试各类内外设
@@ -59,9 +62,25 @@ int core0_main(void)
     cpu_wait_event_ready(); // 等待所有核心初始化完毕
     while (TRUE)
     {
-        lcd_show_float(0, 0, g_euler_angle.yaw, 4, 3);
-        lcd_show_float(0, 1, diff, 3, 3);
+        // stp23l_pop_frame(&lidar1, &lidar1_frame);
+        // stp23l_pop_frame(&lidar2, &lidar2_frame);
+
+        // lcd_show_int(0, 0, lidar1_frame.points[0].distance, 7);
+        // lcd_show_int(8, 0, lidar2_frame.points[0].distance, 7);
+        // lcd_show_float(0, 1, g_euler_angle.yaw, 4, 3);
+        // lcd_show_float(0, 2, diff, 5, 3);
+        // lcd_show_float(0, 3, vel, 5, 3);
+        // lcd_show_uint(0, 4, flag, 5);
+
+        // lcd_show_float(0, 1, diff, 3, 3);
         // printf("%f\n", imu_data.accel_x);
+
+        for (int i = 1; i <= 6; i++)
+        {
+            angle_tar += 30.0f;
+            system_delay_ms(2000);
+            flag = 0;
+        }
     }
 }
 

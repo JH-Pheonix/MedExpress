@@ -1,71 +1,50 @@
 #include "stp23l.h"
 #include "pin.h"
+#include <string.h>
 
-vuint8 receive_data_buffer[STP23L_RX_BUF_SIZE];
-vuint8 receive_data_count = 0;
-
-// 环形队列参数
-#define STP23L_FRAME_QUEUE_SIZE 8
-#define STP23L_ACK_QUEUE_SIZE 4
-static stp23l_frame_t frame_queue[STP23L_FRAME_QUEUE_SIZE];
-static volatile int frame_queue_head = 0;
-static volatile int frame_queue_tail = 0;
-static stp23l_ack_result_t ack_queue[STP23L_ACK_QUEUE_SIZE];
-static volatile int ack_queue_head = 0;
-static volatile int ack_queue_tail = 0;
-
-// 入队（中断/回调里调用）
-static void stp23l_push_frame(const stp23l_frame_t *f)
+stp23l_obj_t stp23l_init(uart_index_enum uartn, uart_rx_pin_enum rx_pin, uart_tx_pin_enum tx_pin, vuint32 baud)
 {
-    int next = (frame_queue_head + 1) % STP23L_FRAME_QUEUE_SIZE;
-    if (next != frame_queue_tail)
-    {
-        frame_queue[frame_queue_head] = *f;
-        frame_queue_head = next;
-    }
-}
-static void stp23l_push_ack(const stp23l_ack_result_t *a)
-{
-    int next = (ack_queue_head + 1) % STP23L_ACK_QUEUE_SIZE;
-    if (next != ack_queue_tail)
-    {
-        ack_queue[ack_queue_head] = *a;
-        ack_queue_head = next;
-    }
+    stp23l_obj_t dev;
+    memset(&dev, 0, sizeof(dev));
+
+    dev.uartn = uartn;
+    memset(dev.rx_buf, 0, STP23L_RX_BUF_SIZE);
+    dev.rx_idx = 0;
+    dev.parser_state = S_WAIT_PREAMBLE;
+    dev.preamble_count = 0;
+    dev.cmd = 0;
+    dev.data_len = 0;
+    dev.frame_seq = 0;
+    dev.ack_seq = 0;
+
+    uart_init(uartn, baud, tx_pin, rx_pin);
+    uart_rx_interrupt(uartn, 1); // 使能接收中断，回调层需要把 dev 传入中断处理
+
+    return dev;
 }
 
-// 出队（主循环里调用）
-int stp23l_pop_frame(stp23l_frame_t *out)
+// write helpers per-device
+static void stp23l_push_frame(stp23l_obj_t *dev, const stp23l_frame_t *f)
 {
-    if (frame_queue_tail == frame_queue_head)
-        return 0;
-    *out = frame_queue[frame_queue_tail];
-    frame_queue_tail = (frame_queue_tail + 1) % STP23L_FRAME_QUEUE_SIZE;
-    return 1;
+    dev->frame_seq = 1;
+    dev->latest_frame = *f;
+    dev->frame_seq = 0;
 }
 
-int stp23l_pop_ack(stp23l_ack_result_t *out)
+static void stp23l_push_ack(stp23l_obj_t *dev, const stp23l_ack_result_t *a)
 {
-    if (ack_queue_tail == ack_queue_head)
-        return 0;
-    *out = ack_queue[ack_queue_tail];
-    ack_queue_tail = (ack_queue_tail + 1) % STP23L_ACK_QUEUE_SIZE;
-    return 1;
+    dev->ack_seq = 1;
+    dev->latest_ack = *a;
+    dev->ack_seq = 0;
 }
 
-static int stp23l_parser_state = S_WAIT_PREAMBLE;
-static int stp23l_preamble_count = 0;
-static uint8_t stp23l_cmd = 0;
-static uint16_t stp23l_data_len = 0;
-static int stp23l_buf_idx = 0;
-
-// helper to reset parser state
-static void stp23l_reset_parser(void)
+// helper to reset parser state for a device
+static void stp23l_reset_parser(stp23l_obj_t *dev)
 {
-    stp23l_parser_state = S_WAIT_PREAMBLE;
-    stp23l_preamble_count = 0;
-    stp23l_buf_idx = 0;
-    stp23l_data_len = 0;
+    dev->parser_state = S_WAIT_PREAMBLE;
+    dev->preamble_count = 0;
+    dev->rx_idx = 0;
+    dev->data_len = 0;
 }
 
 // 校验和计算
@@ -174,8 +153,7 @@ static int stp23l_parse_ack(const uint8_t *payload, int payload_len, stp23l_ack_
     return 0;
 }
 
-// 3. 解析到数据时调用回调
-static int stp23l_process_data(const uint8_t *payload, int payload_len, uint8_t cmd)
+static int stp23l_process_data(stp23l_obj_t *dev, const uint8_t *payload, int payload_len, uint8_t cmd)
 {
     switch (cmd)
     {
@@ -184,7 +162,7 @@ static int stp23l_process_data(const uint8_t *payload, int payload_len, uint8_t 
         stp23l_frame_t temp;
         if (stp23l_parse_frame(payload, payload_len, &temp) == 0)
         {
-            stp23l_push_frame(&temp);
+            stp23l_push_frame(dev, &temp);
             return 0;
         }
         break;
@@ -194,7 +172,7 @@ static int stp23l_process_data(const uint8_t *payload, int payload_len, uint8_t 
         stp23l_ack_result_t temp;
         if (stp23l_parse_ack(payload, payload_len, &temp) == 0)
         {
-            stp23l_push_ack(&temp);
+            stp23l_push_ack(dev, &temp);
             return 0;
         }
         break;
@@ -206,151 +184,188 @@ static int stp23l_process_data(const uint8_t *payload, int payload_len, uint8_t 
 }
 
 // 开始测量数据命令
-int stp23l_get_start(uart_index_enum uartn)
+int stp23l_get_start(stp23l_obj_t *dev)
 {
-    return stp23l_send_cmd(uartn, 0, STP23L_GET_DISTANCE, 0, NULL, 0);
+    if (!dev)
+        return -1;
+    return stp23l_send_cmd(dev->uartn, 0, STP23L_GET_DISTANCE, 0, NULL, 0);
 }
 
-// 停止命令
-int stp23l_send_stop_cmd(uart_index_enum uartn)
+int stp23l_send_stop_cmd(stp23l_obj_t *dev)
 {
-    return stp23l_send_cmd(uartn, 0, STP23L_STOP, 0, NULL, 0);
+    if (!dev)
+        return -1;
+    return stp23l_send_cmd(dev->uartn, 0, STP23L_STOP, 0, NULL, 0);
 }
 
 // 复位命令
-int stp23l_send_reset_cmd(uart_index_enum uartn)
+int stp23l_send_reset_cmd(stp23l_obj_t *dev)
 {
-    return stp23l_send_cmd(uartn, 0, STP23L_RESET_SYSTEM, 0, NULL, 0);
+    if (!dev)
+        return -1;
+    return stp23l_send_cmd(dev->uartn, 0, STP23L_RESET_SYSTEM, 0, NULL, 0);
 }
 
 // 获取传感器信息
-int stp23l_get_version(uart_index_enum uartn)
+int stp23l_get_version(stp23l_obj_t *dev)
 {
-    return stp23l_send_cmd(uartn, 0, STP23L_VERSION, 0, NULL, 0);
+    if (!dev)
+        return -1;
+    return stp23l_send_cmd(dev->uartn, 0, STP23L_VERSION, 0, NULL, 0);
 }
 
-void stp23l_feed_byte(uint8_t byte)
+// per-device 字节喂入处理
+static void stp23l_feed_byte(stp23l_obj_t *dev, uint8_t byte)
 {
-    switch (stp23l_parser_state)
+    switch (dev->parser_state)
     {
     case S_WAIT_PREAMBLE:
         if (byte == STP23L_PREAMBLE)
         {
-            stp23l_preamble_count = 1;
-            stp23l_buf_idx = 0;
-            memset(receive_data_buffer, 0, STP23L_RX_BUF_SIZE);
-            receive_data_buffer[stp23l_buf_idx++] = byte;
-            stp23l_parser_state = S_PREAMBLE_COUNT;
+            dev->preamble_count = 1;
+            dev->rx_idx = 0;
+            memset(dev->rx_buf, 0, STP23L_RX_BUF_SIZE);
+            dev->rx_buf[dev->rx_idx++] = byte;
+            dev->parser_state = S_PREAMBLE_COUNT;
         }
         break;
     case S_PREAMBLE_COUNT:
-        if (byte == STP23L_PREAMBLE && stp23l_preamble_count < 4)
+        if (byte == STP23L_PREAMBLE && dev->preamble_count < 4)
         {
-            receive_data_buffer[stp23l_buf_idx++] = byte;
-            stp23l_preamble_count++;
-            if (stp23l_preamble_count == 4)
-                stp23l_parser_state = S_ADDR;
+            dev->rx_buf[dev->rx_idx++] = byte;
+            dev->preamble_count++;
+            if (dev->preamble_count == 4)
+                dev->parser_state = S_ADDR;
         }
         else
         {
             if (byte == STP23L_PREAMBLE)
             {
-                stp23l_preamble_count = 1;
-                stp23l_buf_idx = 0;
-                memset(receive_data_buffer, 0, STP23L_RX_BUF_SIZE);
-                receive_data_buffer[stp23l_buf_idx++] = byte;
-                stp23l_parser_state = S_PREAMBLE_COUNT;
+                dev->preamble_count = 1;
+                dev->rx_idx = 0;
+                memset(dev->rx_buf, 0, STP23L_RX_BUF_SIZE);
+                dev->rx_buf[dev->rx_idx++] = byte;
+                dev->parser_state = S_PREAMBLE_COUNT;
             }
             else
             {
-                stp23l_reset_parser();
+                stp23l_reset_parser(dev);
             }
         }
         break;
     case S_ADDR:
-        receive_data_buffer[stp23l_buf_idx++] = byte; // device addr
-        stp23l_parser_state = S_CMD;
+        dev->rx_buf[dev->rx_idx++] = byte; // device addr
+        dev->parser_state = S_CMD;
         break;
     case S_CMD:
-        stp23l_cmd = byte;
-        receive_data_buffer[stp23l_buf_idx++] = byte;
-        stp23l_parser_state = S_OFFSET_LO;
+        dev->cmd = byte;
+        dev->rx_buf[dev->rx_idx++] = byte;
+        dev->parser_state = S_OFFSET_LO;
         break;
     case S_OFFSET_LO:
-        receive_data_buffer[stp23l_buf_idx++] = byte;
-        stp23l_parser_state = S_OFFSET_HI;
+        dev->rx_buf[dev->rx_idx++] = byte;
+        dev->parser_state = S_OFFSET_HI;
         break;
     case S_OFFSET_HI:
-        receive_data_buffer[stp23l_buf_idx++] = byte;
-        stp23l_parser_state = S_LEN_LO;
+        dev->rx_buf[dev->rx_idx++] = byte;
+        dev->parser_state = S_LEN_LO;
         break;
     case S_LEN_LO:
-        receive_data_buffer[stp23l_buf_idx++] = byte;
-        stp23l_data_len = byte;
-        stp23l_parser_state = S_LEN_HI;
+        dev->rx_buf[dev->rx_idx++] = byte;
+        dev->data_len = byte;
+        dev->parser_state = S_LEN_HI;
         break;
     case S_LEN_HI:
-        receive_data_buffer[stp23l_buf_idx++] = byte;
-        stp23l_data_len |= ((uint16_t)byte << 8);
-        if (stp23l_data_len > (uint16_t)(STP23L_RX_BUF_SIZE - STP23L_HEADER_SIZE - 1))
+        dev->rx_buf[dev->rx_idx++] = byte;
+        dev->data_len |= ((uint16_t)byte << 8);
+        if (dev->data_len > (uint16_t)(STP23L_RX_BUF_SIZE - STP23L_HEADER_SIZE - 1))
         {
-            stp23l_reset_parser();
+            stp23l_reset_parser(dev);
             break;
         }
-        if (stp23l_data_len == 0)
-            stp23l_parser_state = S_CHECKSUM;
+        if (dev->data_len == 0)
+            dev->parser_state = S_CHECKSUM;
         else
-            stp23l_parser_state = S_PAYLOAD;
+            dev->parser_state = S_PAYLOAD;
         break;
     case S_PAYLOAD:
-        if (stp23l_buf_idx < STP23L_RX_BUF_SIZE)
+        if (dev->rx_idx < STP23L_RX_BUF_SIZE)
         {
-            receive_data_buffer[stp23l_buf_idx++] = byte;
+            dev->rx_buf[dev->rx_idx++] = byte;
         }
-        if (stp23l_buf_idx >= STP23L_HEADER_SIZE + stp23l_data_len)
+        if (dev->rx_idx >= STP23L_HEADER_SIZE + dev->data_len)
         {
-            stp23l_parser_state = S_CHECKSUM;
+            dev->parser_state = S_CHECKSUM;
         }
         break;
     case S_CHECKSUM:
-        if (stp23l_buf_idx < STP23L_RX_BUF_SIZE)
-            receive_data_buffer[stp23l_buf_idx++] = byte;
+        if (dev->rx_idx < STP23L_RX_BUF_SIZE)
+            dev->rx_buf[dev->rx_idx++] = byte;
 
-        if (stp23l_buf_idx > 4)
+        if (dev->rx_idx > 4)
         {
-            uint8_t calc = stp23l_calc_checksum(0, &receive_data_buffer[4], (int)(stp23l_buf_idx - 5));
-            uint8_t recv = receive_data_buffer[stp23l_buf_idx - 1];
+            uint8_t calc = stp23l_calc_checksum(0, &dev->rx_buf[4], (int)(dev->rx_idx - 5));
+            uint8_t recv = dev->rx_buf[dev->rx_idx - 1];
             if (calc == recv)
             {
                 int payload_offset = STP23L_HEADER_SIZE;
-                int payload_len = stp23l_data_len;
-                if (payload_offset + payload_len <= stp23l_buf_idx - 1)
+                int payload_len = dev->data_len;
+                if (payload_offset + payload_len <= dev->rx_idx - 1)
                 {
-                    stp23l_process_data(&receive_data_buffer[payload_offset], payload_len, stp23l_cmd);
+                    stp23l_process_data(dev, &dev->rx_buf[payload_offset], payload_len, dev->cmd);
                 }
             }
         }
 
-        stp23l_reset_parser();
+        stp23l_reset_parser(dev);
         break;
     default:
-        stp23l_reset_parser();
+        stp23l_reset_parser(dev);
         break;
     }
 }
 
-// 放在串口中断里面
-void stp23l_receiver_callback(uart_index_enum uartn)
+// 串口回调：现在直接接收设备对象指针，由调用者（注册中断时）传入对应的对象
+void stp23l_receiver_callback(stp23l_obj_t *dev)
 {
+    if (!dev)
+        return;
     uint8_t byte;
-    while (uart_query_byte(uartn, &byte))
+    while (uart_query_byte(dev->uartn, &byte))
     {
-        stp23l_feed_byte(byte);
+        stp23l_feed_byte(dev, byte);
     }
 }
 
-void stp23l_init(void)
+// 读取最新数据（从设备对象中复制出来）
+int stp23l_pop_frame(stp23l_obj_t *dev, stp23l_frame_t *out)
 {
-    uart_init(STP23L_UART, STP23L_BAUDRATE, STP23L_TX_PIN, STP23L_RX_PIN);
-    uart_rx_interrupt(STP23L_UART, 1);
+    if (!dev || !out)
+        return 0;
+    uint8_t s1, s2;
+    do
+    {
+        s1 = dev->frame_seq;
+        if (s1 != 0)
+            continue;
+        memcpy(out, &dev->latest_frame, sizeof(*out));
+        s2 = dev->frame_seq;
+    } while (s1 != s2);
+    return 1;
+}
+
+int stp23l_pop_ack(stp23l_obj_t *dev, stp23l_ack_result_t *out)
+{
+    if (!dev || !out)
+        return 0;
+    uint8_t s1, s2;
+    do
+    {
+        s1 = dev->ack_seq;
+        if (s1 != 0)
+            continue;
+        memcpy(out, &dev->latest_ack, sizeof(*out));
+        s2 = dev->ack_seq;
+    } while (s1 != s2);
+    return 1;
 }
