@@ -2,15 +2,31 @@
 #define _CONTROL_PID_CONTROL_H_
 
 #include "zf_common_typedef.h"
+#include "motor.h"
+#include "stp23l.h"
+
+typedef enum
+{
+    WAITING_ANGLE,
+    WAITING_RUNNING,
+    RUNNING_X,
+    RUNNING_Y,
+    ROTATING,
+    CHECKING,
+    RETURNING,
+    STOP
+} control_running_mode_e;
 
 void control_init(void);
 void control_handler(void);
 float control_angle_pid(void);
-void control_test_circle();
+float control_pos_pid(int16 distance, float);
+vuint8 control_pid_pos(stp23l_obj_t *lidar, motor_obj_t *motor_a, motor_obj_t *motor_b, float pos_target);
+vuint8 control_rolling(float angle_target);
 
-extern float diff;
-extern float vel;
-extern vuint8 flag;
 extern float angle_tar;
+extern float x_tar;
+extern float y_tar;
+extern control_running_mode_e curr_state;
 
 #endif

@@ -62,25 +62,50 @@ int core0_main(void)
     cpu_wait_event_ready(); // 等待所有核心初始化完毕
     while (TRUE)
     {
+        system_delay_ms(100);
         // stp23l_pop_frame(&lidar1, &lidar1_frame);
         // stp23l_pop_frame(&lidar2, &lidar2_frame);
 
         // lcd_show_int(0, 0, lidar1_frame.points[0].distance, 7);
         // lcd_show_int(8, 0, lidar2_frame.points[0].distance, 7);
-        // lcd_show_float(0, 1, g_euler_angle.yaw, 4, 3);
-        // lcd_show_float(0, 2, diff, 5, 3);
-        // lcd_show_float(0, 3, vel, 5, 3);
-        // lcd_show_uint(0, 4, flag, 5);
-
-        // lcd_show_float(0, 1, diff, 3, 3);
-        // printf("%f\n", imu_data.accel_x);
-
-        for (int i = 1; i <= 6; i++)
+        if (keymsg.key == KEY_L)
         {
-            angle_tar += 30.0f;
-            system_delay_ms(2000);
-            flag = 0;
+            if (curr_state == WAITING_RUNNING)
+            {
+                system_delay_ms(1000);
+                curr_state = RUNNING_X;
+            }
+            else if (curr_state == WAITING_ANGLE)
+            {
+                system_delay_ms(1000);
+                curr_state = WAITING_RUNNING;
+                angle_tar = g_euler_angle.yaw;
+                stp23l_frame_t lidar_frame;
+                stp23l_pop_frame(&lidar1, &lidar_frame);
+                x_tar = lidar_frame.points[0].distance;
+                stp23l_pop_frame(&lidar2, &lidar_frame);
+                y_tar = lidar_frame.points[0].distance;
+            }
         }
+
+        lcd_show_string(0, 0, "status:");
+        lcd_show_int(8, 0, curr_state, 1);
+        lcd_show_string(0, 1, "atar:");
+        lcd_show_float(7, 1, angle_tar, 4, 3);
+        lcd_show_string(0, 2, "xtar:");
+        lcd_show_float(7, 2, x_tar, 4, 3);
+        lcd_show_string(0, 3, "ytar:");
+        lcd_show_float(7, 3, y_tar, 4, 3);
+        lcd_show_string(0, 4, "yaw:");
+        lcd_show_float(7, 4, g_euler_angle.yaw, 4, 3);
+        stp23l_frame_t tmp;
+        stp23l_pop_frame(&lidar1, &tmp);
+        lcd_show_string(0, 5, "lidar1:");
+        lcd_show_int(7, 5, tmp.points[0].distance, 6);
+        lcd_show_string(0, 6, "lidar2:");
+        stp23l_pop_frame(&lidar2, &tmp);
+        lcd_show_int(7, 6, tmp.points[0].distance, 6);
+        // lcd_show_float(0, 1, diff, 3, 3);
     }
 }
 

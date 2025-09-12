@@ -24,6 +24,10 @@ void motor_set_pwm(motor_obj_t *motor, vint32 duty)
     {
         return;
     }
+    if (duty != 0)
+    {
+        duty += (duty > 0) ? motor->deadzone : -motor->deadzone;
+    }
 
     CLAMP(duty, 9999);
 
