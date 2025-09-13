@@ -1,66 +1,79 @@
 /*********************************************************************************************************************
-* TC377 Opensourec Library 即（TC377 开源库）是一个基于官方 SDK 接口的第三方开源库
-* Copyright (c) 2022 SEEKFREE 逐飞科技
+* TC377 Opensourec Library 鍗筹紙TC377 寮�婧愬簱锛夋槸涓�涓熀浜庡畼鏂� SDK 鎺ュ彛鐨勭涓夋柟寮�婧愬簱
+* Copyright (c) 2022 SEEKFREE 閫愰绉戞妧
 *
-* 本文件是 TC377 开源库的一部分
+* 鏈枃浠舵槸 TC377 寮�婧愬簱鐨勪竴閮ㄥ垎
 *
-* TC377 开源库 是免费软件
-* 您可以根据自由软件基金会发布的 GPL（GNU General Public License，即 GNU通用公共许可证）的条款
-* 即 GPL 的第3版（即 GPL3.0）或（您选择的）任何后来的版本，重新发布和/或修改它
+* TC377 寮�婧愬簱 鏄厤璐硅蒋浠�
+* 鎮ㄥ彲浠ユ牴鎹嚜鐢辫蒋浠跺熀閲戜細鍙戝竷鐨� GPL锛圙NU General Public License锛屽嵆 GNU閫氱敤鍏叡璁稿彲璇侊級鐨勬潯娆�
+* 鍗� GPL 鐨勭3鐗堬紙鍗� GPL3.0锛夋垨锛堟偍閫夋嫨鐨勶級浠讳綍鍚庢潵鐨勭増鏈紝閲嶆柊鍙戝竷鍜�/鎴栦慨鏀瑰畠
 *
-* 本开源库的发布是希望它能发挥作用，但并未对其作任何的保证
-* 甚至没有隐含的适销性或适合特定用途的保证
-* 更多细节请参见 GPL
+* 鏈紑婧愬簱鐨勫彂甯冩槸甯屾湜瀹冭兘鍙戞尌浣滅敤锛屼絾骞舵湭瀵瑰叾浣滀换浣曠殑淇濊瘉
+* 鐢氳嚦娌℃湁闅愬惈鐨勯�傞攢鎬ф垨閫傚悎鐗瑰畾鐢ㄩ�旂殑淇濊瘉
+* 鏇村缁嗚妭璇峰弬瑙� GPL
 *
-* 您应该在收到本开源库的同时收到一份 GPL 的副本
-* 如果没有，请参阅<https://www.gnu.org/licenses/>
+* 鎮ㄥ簲璇ュ湪鏀跺埌鏈紑婧愬簱鐨勫悓鏃舵敹鍒颁竴浠� GPL 鐨勫壇鏈�
+* 濡傛灉娌℃湁锛岃鍙傞槄<https://www.gnu.org/licenses/>
 *
-* 额外注明：
-* 本开源库使用 GPL3.0 开源许可证协议 以上许可申明为译文版本
-* 许可申明英文版在 libraries/doc 文件夹下的 GPL3_permission_statement.txt 文件中
-* 许可证副本在 libraries 文件夹下 即该文件夹下的 LICENSE 文件
-* 欢迎各位使用并传播本程序 但修改内容时必须保留逐飞科技的版权声明（即本声明）
+* 棰濆娉ㄦ槑锛�
+* 鏈紑婧愬簱浣跨敤 GPL3.0 寮�婧愯鍙瘉鍗忚 浠ヤ笂璁稿彲鐢虫槑涓鸿瘧鏂囩増鏈�
+* 璁稿彲鐢虫槑鑻辨枃鐗堝湪 libraries/doc 鏂囦欢澶逛笅鐨� GPL3_permission_statement.txt 鏂囦欢涓�
+* 璁稿彲璇佸壇鏈湪 libraries 鏂囦欢澶逛笅 鍗宠鏂囦欢澶逛笅鐨� LICENSE 鏂囦欢
+* 娆㈣繋鍚勪綅浣跨敤骞朵紶鎾湰绋嬪簭 浣嗕慨鏀瑰唴瀹规椂蹇呴』淇濈暀閫愰绉戞妧鐨勭増鏉冨０鏄庯紙鍗虫湰澹版槑锛�
 *
-* 文件名称          cpu1_main
-* 公司名称          成都逐飞科技有限公司
-* 版本信息          查看 libraries/doc 文件夹内 version 文件 版本说明
-* 开发环境          ADS v1.10.2
-* 适用平台          TC377TP
-* 店铺链接          https://seekfree.taobao.com/
+* 鏂囦欢鍚嶇О          cpu1_main
+* 鍏徃鍚嶇О          鎴愰兘閫愰绉戞妧鏈夐檺鍏徃
+* 鐗堟湰淇℃伅          鏌ョ湅 libraries/doc 鏂囦欢澶瑰唴 version 鏂囦欢 鐗堟湰璇存槑
+* 寮�鍙戠幆澧�          ADS v1.10.2
+* 閫傜敤骞冲彴          TC377TP
+* 搴楅摵閾炬帴          https://seekfree.taobao.com/
 *
-* 修改记录
-* 日期              作者                备注
+* 淇敼璁板綍
+* 鏃ユ湡              浣滆��                澶囨敞
 * 2022-11-03       pudding            first version
 ********************************************************************************************************************/
 
 #include "zf_common_headfile.h"
+#include "pid_control.h"
 #pragma section all "cpu1_dsram"
-// 将本语句与#pragma section all restore语句之间的全局变量都放在CPU1的RAM中
+// 灏嗘湰璇彞涓�#pragma section all restore璇彞涔嬮棿鐨勫叏灞�鍙橀噺閮芥斁鍦–PU1鐨凴AM涓�
 
-// 本例程是开源库空工程 可用作移植或者测试各类内外设
-// 本例程是开源库空工程 可用作移植或者测试各类内外设
-// 本例程是开源库空工程 可用作移植或者测试各类内外设
+// 鏈緥绋嬫槸寮�婧愬簱绌哄伐绋� 鍙敤浣滅Щ妞嶆垨鑰呮祴璇曞悇绫诲唴澶栬
+// 鏈緥绋嬫槸寮�婧愬簱绌哄伐绋� 鍙敤浣滅Щ妞嶆垨鑰呮祴璇曞悇绫诲唴澶栬
+// 鏈緥绋嬫槸寮�婧愬簱绌哄伐绋� 鍙敤浣滅Щ妞嶆垨鑰呮祴璇曞悇绫诲唴澶栬
 
-// **************************** 代码区域 ****************************
+// **************************** 浠ｇ爜鍖哄煙 ****************************
 void core1_main(void)
 {
-    disable_Watchdog();                     // 关闭看门狗
-    interrupt_global_enable(0);             // 打开全局中断
-    // 此处编写用户代码 例如外设初始化代码等
+    disable_Watchdog();                     // 鍏抽棴鐪嬮棬鐙�
+    interrupt_global_enable(0);             // 鎵撳紑鍏ㄥ眬涓柇
+    // 姝ゅ缂栧啓鐢ㄦ埛浠ｇ爜 渚嬪澶栬鍒濆鍖栦唬鐮佺瓑
 
 
 
 
-    // 此处编写用户代码 例如外设初始化代码等
-    cpu_wait_event_ready();                 // 等待所有核心初始化完毕
+    // 姝ゅ缂栧啓鐢ㄦ埛浠ｇ爜 渚嬪澶栬鍒濆鍖栦唬鐮佺瓑
+    cpu_wait_event_ready();                 // 绛夊緟鎵�鏈夋牳蹇冨垵濮嬪寲瀹屾瘯
+    //curr_state = RUNNING_GUANDAO;
+    while(1){
+    while(curr_state != RUNNING_GUANDAO)system_delay_ms(10);
+    move_guandao(-1200,Dir_left);
+    move_guandao(4200,Dir_front);
+    move_guandao(-2000,Dir_left);
+    move_guandao(5500,Dir_front);
+    curr_state=RUNNING_X;
+    while(curr_state != RUNNING_GUANDAO){
+        system_delay_ms(10);
+    }
+    system_delay_ms(4000);
+    move_guandao(4200,Dir_back);
+    move_guandao(2000,Dir_right);
+    move_guandao(0,Dir_back);
+    move_guandao(0,Dir_left);
+    }
     while (TRUE)
     {
-        // 此处编写需要循环执行的代码
 
-
-
-
-        // 此处编写需要循环执行的代码
     }
 }
 #pragma section all restore

@@ -9,6 +9,7 @@ typedef enum
 {
     WAITING_ANGLE,
     WAITING_RUNNING,
+    RUNNING_GUANDAO,
     RUNNING_X,
     RUNNING_Y,
     ROTATING,
@@ -22,6 +23,7 @@ void control_handler(void);
 float control_angle_pid(void);
 float control_pos_pid(int16 distance, float);
 vuint8 control_pid_pos(stp23l_obj_t *lidar, motor_obj_t *motor_a, motor_obj_t *motor_b, float pos_target);
+vuint8 control_pid_pos_2(stp23l_obj_t *lidar, motor_obj_t *motor_a, motor_obj_t *motor_b, float pos_target,vuint8 status_now);
 vuint8 control_rolling(float angle_target);
 
 extern float angle_tar;
@@ -29,4 +31,15 @@ extern float x_tar;
 extern float y_tar;
 extern control_running_mode_e curr_state;
 
+extern float position_X,position_Y;//0front 1back 2left 3right 4stop
+typedef enum
+{
+    Dir_front,
+    Dir_back,
+    Dir_left,
+    Dir_right,
+    Dir_stop
+}control_running_dir_e;
+void move_guandao(float target_pos,int Dir_now);
+extern int now_dir;
 #endif
