@@ -7,6 +7,7 @@
 #include "lcd.h"
 #include "Attitude.h"
 #include "stp23l.h"
+#include "maixcam.h"
 
 void system_init(void);
 
@@ -17,5 +18,7 @@ extern motor_obj_t motor4;
 
 extern stp23l_obj_t lidar1;
 extern stp23l_obj_t lidar2;
+
+extern maixcam_obj_t maixcam1;
 
 #endif

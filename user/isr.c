@@ -40,6 +40,7 @@
 #include "Attitude.h"
 #include "pid_control.h"
 #include "init.h"
+#include "maixcam.h"
 
 // 瀵逛簬TC绯诲垪榛樿鏄笉鏀寔涓柇宓屽鐨勶紝甯屾湜鏀寔涓柇宓屽闇�瑕佸湪涓柇鍐呬娇鐢� interrupt_global_enable(0); 鏉ュ紑鍚腑鏂祵濂�
 // 绠�鍗曠偣璇村疄闄呬笂杩涘叆涓柇鍚嶵C绯诲垪鐨勭‖浠惰嚜鍔ㄨ皟鐢ㄤ簡 interrupt_global_disable(); 鏉ユ嫆缁濆搷搴斾换浣曠殑涓柇锛屽洜姝ら渶瑕佹垜浠嚜宸辨墜鍔ㄨ皟鐢� interrupt_global_enable(0); 鏉ュ紑鍚腑鏂殑鍝嶅簲銆�
@@ -57,11 +58,15 @@ IFX_INTERRUPT(cc60_pit_ch1_isr, CCU6_0_CH1_INT_VECTAB_NUM, CCU6_0_CH1_ISR_PRIORI
     interrupt_global_enable(0); // 寮�鍚腑鏂祵濂�
     pit_clear_flag(CCU60_CH1);
     attitude_cal();
-    float now_speed=100,d_isr=0.02;// mm/s
-    if(now_dir==Dir_front) position_X+=d_isr*now_speed;
-    if(now_dir==Dir_back) position_X-=d_isr*now_speed;
-    if(now_dir==Dir_right) position_Y+=d_isr*now_speed;
-    if(now_dir==Dir_left) position_Y-=d_isr*now_speed;
+    float now_speed = 100, d_isr = 0.02; // mm/s
+    if (now_dir == Dir_front)
+        position_X += d_isr * now_speed;
+    if (now_dir == Dir_back)
+        position_X -= d_isr * now_speed;
+    if (now_dir == Dir_right)
+        position_Y += d_isr * now_speed;
+    if (now_dir == Dir_left)
+        position_Y -= d_isr * now_speed;
 }
 
 IFX_INTERRUPT(cc61_pit_ch0_isr, CCU6_1_CH0_INT_VECTAB_NUM, CCU6_1_CH0_ISR_PRIORITY)
@@ -232,6 +237,7 @@ IFX_INTERRUPT(uart8_rx_isr, UART8_INT_VECTAB_NUM, UART8_RX_INT_PRIO)
 {
     interrupt_global_enable(0);        // 寮�鍚腑鏂祵濂�
     stp23l_receiver_callback(&lidar1); // STP23L婵�鍏夐浄杈句覆鍙ｅ洖璋�
+    maixcam_uart_handler(&maixcam1);   // MaixCam婵�鍏夐浄杈句覆鍙ｅ洖璋�
 }
 
 IFX_INTERRUPT(uart9_tx_isr, UART9_INT_VECTAB_NUM, UART9_TX_INT_PRIO)
