@@ -25,23 +25,23 @@ void system_init(void)
     motor3 = motor_init(ATOM0_CH2_P14_3, P14_2, 10000, 700, -1);
     motor4 = motor_init(ATOM0_CH4_P14_1, P14_0, 10000, 700, 1);
 
-    // lidar1 = stp23l_init(UART_8, UART8_RX_P33_6, UART8_TX_P33_7, 230400);
-    // lidar2 = stp23l_init(UART_6, UART6_RX_P23_1, UART6_TX_P22_0, 230400);
+    lidar1 = stp23l_init(UART_8, UART8_RX_P33_6, UART8_TX_P33_7, 230400);
+    lidar2 = stp23l_init(UART_6, UART6_RX_P23_1, UART6_TX_P22_0, 230400);
 
-    maixcam1 = maixcam_uart_init(UART_8, UART8_RX_P33_6, UART8_TX_P33_7, 115200);
+    maixcam1 = maixcam_uart_init(UART_10, UART10_RX_P13_1, UART10_TX_P00_8, 115200);
     // motor_set_pwm(&motor1, 510);
     // motor_set_pwm(&motor2, 510);
     // motor_set_pwm(&motor3, 510);
     // motor_set_pwm(&motor4, 510);
 
-    // imu_init(IMU_DEVICE_963RA);
-    // attitude_init(ATTITUDE_EKF);
-    // key_init_rewrite(KEY_NUM); // 初始化按键
-    // pit_ms_init(CCU60_CH0, PIT_KEY_T);
-    // pit_enable(CCU60_CH0);
-    // pit_ms_init(CCU60_CH1, PIT_ATTITUDE_T);
-    // pit_enable(CCU60_CH1);
+     imu_init(IMU_DEVICE_963RA);
+     attitude_init(ATTITUDE_EKF);
+     key_init_rewrite(KEY_NUM); // 鍒濆鍖栨寜閿�
+     pit_ms_init(CCU60_CH0, PIT_KEY_T);
+     pit_enable(CCU60_CH0);
+     pit_ms_init(CCU60_CH1, PIT_ATTITUDE_T);
+     pit_enable(CCU60_CH1);
 
-    // pit_ms_init(CCU61_CH0, PIT_CONTROL_T);
-    // pit_enable(CCU61_CH0);
+     pit_ms_init(CCU61_CH0, PIT_CONTROL_T);
+     pit_enable(CCU61_CH0);
 }

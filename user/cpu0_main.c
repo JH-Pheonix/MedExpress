@@ -1,35 +1,35 @@
 /*********************************************************************************************************************
- * TC377 Opensourec Library 鍗筹紙TC377 寮�婧愬簱锛夋槸涓�涓熀浜庡畼鏂� SDK 鎺ュ彛鐨勭涓夋柟寮�婧愬簱
- * Copyright (c) 2022 SEEKFREE 閫愰绉戞妧
+ * TC377 Opensourec Library 閸楃绱橳C377 瀵拷濠ф劕绨遍敍澶嬫Ц娑擄拷娑擃亜鐔�娴滃骸鐣奸弬锟� SDK 閹恒儱褰涢惃鍕儑娑撳鏌熷锟藉┃鎰氨
+ * Copyright (c) 2022 SEEKFREE 闁劙顥ｇ粔鎴炲Η
  *
- * 鏈枃浠舵槸 TC377 寮�婧愬簱鐨勪竴閮ㄥ垎
+ * 閺堫剚鏋冩禒鑸垫Ц TC377 瀵拷濠ф劕绨遍惃鍕闁劌鍨�
  *
- * TC377 寮�婧愬簱 鏄厤璐硅蒋浠�
- * 鎮ㄥ彲浠ユ牴鎹嚜鐢辫蒋浠跺熀閲戜細鍙戝竷鐨� GPL锛圙NU General Public License锛屽嵆 GNU閫氱敤鍏叡璁稿彲璇侊級鐨勬潯娆�
- * 鍗� GPL 鐨勭3鐗堬紙鍗� GPL3.0锛夋垨锛堟偍閫夋嫨鐨勶級浠讳綍鍚庢潵鐨勭増鏈紝閲嶆柊鍙戝竷鍜�/鎴栦慨鏀瑰畠
+ * TC377 瀵拷濠ф劕绨� 閺勵垰鍘ょ拹纭呰拫娴狅拷
+ * 閹劌褰叉禒銉︾壌閹诡喛鍤滈悽杈拫娴犺泛鐔�闁叉垳绱伴崣鎴濈閻拷 GPL閿涘湙NU General Public License閿涘苯宓� GNU闁氨鏁ら崗顒�鍙＄拋绋垮讲鐠囦緤绱氶惃鍕蒋濞嗭拷
+ * 閸楋拷 GPL 閻ㄥ嫮顑�3閻楀牞绱欓崡锟� GPL3.0閿涘鍨ㄩ敍鍫熷亶闁瀚ㄩ惃鍕剁礆娴犺缍嶉崥搴㈡降閻ㄥ嫮澧楅張顒婄礉闁插秵鏌婇崣鎴濈閸滐拷/閹存牔鎱ㄩ弨鐟扮暊
  *
- * 鏈紑婧愬簱鐨勫彂甯冩槸甯屾湜瀹冭兘鍙戞尌浣滅敤锛屼絾骞舵湭瀵瑰叾浣滀换浣曠殑淇濊瘉
- * 鐢氳嚦娌℃湁闅愬惈鐨勯�傞攢鎬ф垨閫傚悎鐗瑰畾鐢ㄩ�旂殑淇濊瘉
- * 鏇村缁嗚妭璇峰弬瑙� GPL
+ * 閺堫剙绱戝┃鎰氨閻ㄥ嫬褰傜敮鍐╂Ц鐢本婀滅�瑰啳鍏橀崣鎴炲皩娴ｆ粎鏁ら敍灞肩稻楠炶埖婀�电懓鍙炬担婊�鎹㈡担鏇犳畱娣囨繆鐦�
+ * 閻㈡俺鍤﹀▽鈩冩箒闂呮劕鎯堥惃鍕拷鍌炴敘閹勫灗闁倸鎮庨悧鐟扮暰閻€劑锟芥梻娈戞穱婵婄槈
+ * 閺囨潙顦跨紒鍡氬Ν鐠囧嘲寮憴锟� GPL
  *
- * 鎮ㄥ簲璇ュ湪鏀跺埌鏈紑婧愬簱鐨勫悓鏃舵敹鍒颁竴浠� GPL 鐨勫壇鏈�
- * 濡傛灉娌℃湁锛岃鍙傞槄<https://www.gnu.org/licenses/>
+ * 閹劌绨茬拠銉ユ躬閺�璺哄煂閺堫剙绱戝┃鎰氨閻ㄥ嫬鎮撻弮鑸垫暪閸掗绔存禒锟� GPL 閻ㄥ嫬澹囬張锟�
+ * 婵″倹鐏夊▽鈩冩箒閿涘矁顕崣鍌炴<https://www.gnu.org/licenses/>
  *
- * 棰濆娉ㄦ槑锛�
- * 鏈紑婧愬簱浣跨敤 GPL3.0 寮�婧愯鍙瘉鍗忚 浠ヤ笂璁稿彲鐢虫槑涓鸿瘧鏂囩増鏈�
- * 璁稿彲鐢虫槑鑻辨枃鐗堝湪 libraries/doc 鏂囦欢澶逛笅鐨� GPL3_permission_statement.txt 鏂囦欢涓�
- * 璁稿彲璇佸壇鏈湪 libraries 鏂囦欢澶逛笅 鍗宠鏂囦欢澶逛笅鐨� LICENSE 鏂囦欢
- * 娆㈣繋鍚勪綅浣跨敤骞朵紶鎾湰绋嬪簭 浣嗕慨鏀瑰唴瀹规椂蹇呴』淇濈暀閫愰绉戞妧鐨勭増鏉冨０鏄庯紙鍗虫湰澹版槑锛�
+ * 妫版繂顦诲▔銊︽閿涳拷
+ * 閺堫剙绱戝┃鎰氨娴ｈ法鏁� GPL3.0 瀵拷濠ф劘顔忛崣顖濈槈閸楀繗顔� 娴犮儰绗傜拋绋垮讲閻㈣櫕妲戞稉楦跨槯閺傚洨澧楅張锟�
+ * 鐠佺褰查悽铏閼昏鲸鏋冮悧鍫濇躬 libraries/doc 閺傚洣娆㈡径閫涚瑓閻拷 GPL3_permission_statement.txt 閺傚洣娆㈡稉锟�
+ * 鐠佺褰茬拠浣稿閺堫剙婀� libraries 閺傚洣娆㈡径閫涚瑓 閸楀疇顕氶弬鍥︽婢堕�涚瑓閻拷 LICENSE 閺傚洣娆�
+ * 濞嗐垼绻嬮崥鍕秴娴ｈ法鏁ら獮鏈电炊閹绢厽婀扮粙瀣碍 娴ｅ棔鎱ㄩ弨鐟板敶鐎硅妞傝箛鍛淬�忔穱婵堟殌闁劙顥ｇ粔鎴炲Η閻ㄥ嫮澧楅弶鍐紣閺勫函绱欓崡铏拱婢圭増妲戦敍锟�
  *
- * 鏂囦欢鍚嶇О          cpu0_main
- * 鍏徃鍚嶇О          鎴愰兘閫愰绉戞妧鏈夐檺鍏徃
- * 鐗堟湰淇℃伅          鏌ョ湅 libraries/doc 鏂囦欢澶瑰唴 version 鏂囦欢 鐗堟湰璇存槑
- * 寮�鍙戠幆澧�          ADS v1.10.2
- * 閫傜敤骞冲彴          TC377TP
- * 搴楅摵閾炬帴          https://seekfree.taobao.com/
+ * 閺傚洣娆㈤崥宥囆�          cpu0_main
+ * 閸忣剙寰冮崥宥囆�          閹存劙鍏橀柅鎰邦棧缁夋垶濡ч張澶愭閸忣剙寰�
+ * 閻楀牊婀版穱鈩冧紖          閺屻儳婀� libraries/doc 閺傚洣娆㈡径鐟板敶 version 閺傚洣娆� 閻楀牊婀扮拠瀛樻
+ * 瀵拷閸欐垹骞嗘晶锟�          ADS v1.10.2
+ * 闁倻鏁ら獮鍐插酱          TC377TP
+ * 鎼存鎽甸柧鐐复          https://seekfree.taobao.com/
  *
- * 淇敼璁板綍
- * 鏃ユ湡              浣滆��                澶囨敞
+ * 娣囶喗鏁肩拋鏉跨秿
+ * 閺冦儲婀�              娴ｆ粏锟斤拷                婢跺洦鏁�
  * 2022-11-03       pudding            first version
  ********************************************************************************************************************/
 #include "zf_common_headfile.h"
@@ -42,24 +42,24 @@
 #include "stp23l.h"
 
 #pragma section all "cpu0_dsram"
-// 灏嗘湰璇彞涓�#pragma section all restore璇彞涔嬮棿鐨勫叏灞�鍙橀噺閮芥斁鍦–PU0鐨凴AM涓�
+// 鐏忓棙婀扮拠顓炲綖娑擄拷#pragma section all restore鐠囶厼褰炴稊瀣？閻ㄥ嫬鍙忕仦锟介崣姗�鍣洪柈鑺ユ杹閸︹�揚U0閻ㄥ嚧AM娑擄拷
 
 stp23l_frame_t lidar1_frame;
 stp23l_frame_t lidar2_frame;
-// 鏈緥绋嬫槸寮�婧愬簱绌哄伐绋� 鍙敤浣滅Щ妞嶆垨鑰呮祴璇曞悇绫诲唴澶栬
-// 鏈緥绋嬫槸寮�婧愬簱绌哄伐绋� 鍙敤浣滅Щ妞嶆垨鑰呮祴璇曞悇绫诲唴澶栬
-// 鏈緥绋嬫槸寮�婧愬簱绌哄伐绋� 鍙敤浣滅Щ妞嶆垨鑰呮祴璇曞悇绫诲唴澶栬
-// **************************** 浠ｇ爜鍖哄煙 ****************************
+// 閺堫兛绶ョ粙瀣Ц瀵拷濠ф劕绨辩粚鍝勪紣缁嬶拷 閸欘垳鏁ゆ担婊呅╁宥嗗灗閼板懏绁寸拠鏇炴倗缁鍞存径鏍啎
+// 閺堫兛绶ョ粙瀣Ц瀵拷濠ф劕绨辩粚鍝勪紣缁嬶拷 閸欘垳鏁ゆ担婊呅╁宥嗗灗閼板懏绁寸拠鏇炴倗缁鍞存径鏍啎
+// 閺堫兛绶ョ粙瀣Ц瀵拷濠ф劕绨辩粚鍝勪紣缁嬶拷 閸欘垳鏁ゆ担婊呅╁宥嗗灗閼板懏绁寸拠鏇炴倗缁鍞存径鏍啎
+// **************************** 娴狅絿鐖滈崠鍝勭厵 ****************************
 int core0_main(void)
 {
-    clock_init(); // 鑾峰彇鏃堕挓棰戠巼<鍔″繀淇濈暀>
-    debug_init(); // 鍒濆鍖栭粯璁よ皟璇曚覆鍙�
-    // 姝ゅ缂栧啓鐢ㄦ埛浠ｇ爜 渚嬪澶栬鍒濆鍖栦唬鐮佺瓑
+    clock_init(); // 閼惧嘲褰囬弮鍫曟寭妫版垹宸�<閸斺�崇箑娣囨繄鏆�>
+    debug_init(); // 閸掓繂顫愰崠鏍帛鐠併倛鐨熺拠鏇氳閸欙拷
+    // 濮濄倕顦╃紓鏍у晸閻€劍鍩涙禒锝囩垳 娓氬顩ф径鏍啎閸掓繂顫愰崠鏍﹀敩閻胶鐡�
 
-    system_init(); // 绯荤粺鍒濆鍖�
+    system_init(); // 缁崵绮洪崚婵嗩潗閸栵拷
 
-    // 姝ゅ缂栧啓鐢ㄦ埛浠ｇ爜 渚嬪澶栬鍒濆鍖栦唬鐮佺瓑
-    cpu_wait_event_ready(); // 绛夊緟鎵�鏈夋牳蹇冨垵濮嬪寲瀹屾瘯
+    // 濮濄倕顦╃紓鏍у晸閻€劍鍩涙禒锝囩垳 娓氬顩ф径鏍啎閸掓繂顫愰崠鏍﹀敩閻胶鐡�
+    cpu_wait_event_ready(); // 缁涘绶熼幍锟介張澶嬬壋韫囧啫鍨垫慨瀣鐎瑰本鐦�
     while (TRUE)
     {
         system_delay_ms(2);
@@ -93,33 +93,35 @@ int core0_main(void)
         }
         maixcam_message_t data;
         data = maixcam_pop_data();
-        lcd_show_uint(0, 0, data.cmd, 3);
-        lcd_show_uint(8, 0, data.data, 3);
-        // lcd_show_string(0, 0, "status:");
-        // lcd_show_int(8, 0, curr_state, 1);
-        // lcd_show_string(0, 1, "atar:");
-        // lcd_show_float(7, 1, angle_tar, 4, 3);
-        // lcd_show_string(0, 2, "xtar:");
-        // lcd_show_float(7, 2, x_tar, 4, 3);
-        // lcd_show_string(0, 3, "ytar:");
-        // lcd_show_float(7, 3, y_tar, 4, 3);
-        // lcd_show_string(0, 4, "yaw:");
-        // lcd_show_float(7, 4, g_euler_angle.yaw, 4, 3);
-        // stp23l_frame_t tmp;
-        // stp23l_pop_frame(&lidar1, &tmp);
-        // lcd_show_string(0, 5, "lidar1:");
-        // lcd_show_int(7, 5, tmp.points[0].distance, 6);
-        // lcd_show_string(0, 6, "lidar2:");
-        // stp23l_pop_frame(&lidar2, &tmp);
-        // lcd_show_int(7, 6, tmp.points[0].distance, 6);
+        lcd_show_uint(0, 9, data.cmd, 3);
+        lcd_show_uint(8, 9, data.data, 3);
+        if(data_camera==0&&data.data!=0)data_camera=data.data;
+        maixcam_clear();
+         lcd_show_string(0, 0, "status:");
+         lcd_show_int(8, 0, curr_state, 1);
+         lcd_show_string(0, 1, "atar:");
+         lcd_show_float(7, 1, angle_tar, 4, 3);
+         lcd_show_string(0, 2, "xtar:");
+         lcd_show_float(7, 2, x_tar, 4, 3);
+         lcd_show_string(0, 3, "ytar:");
+         lcd_show_float(7, 3, y_tar, 4, 3);
+         lcd_show_string(0, 4, "yaw:");
+         lcd_show_float(7, 4, g_euler_angle.yaw, 4, 3);
+         stp23l_frame_t tmp;
+         stp23l_pop_frame(&lidar1, &tmp);
+         lcd_show_string(0, 5, "lidar1:");
+         lcd_show_int(7, 5, tmp.points[0].distance, 6);
+         lcd_show_string(0, 6, "lidar2:");
+         stp23l_pop_frame(&lidar2, &tmp);
+         lcd_show_int(7, 6, tmp.points[0].distance, 6);
 
-        // lcd_show_string(0, 7, "PosX:");
-        // lcd_show_int(7, 7, position_X,6);
-        // lcd_show_string(0, 8, "PosY:");
-        // lcd_show_int(7, 8, position_Y, 6);
+         lcd_show_string(0, 7, "PosX:");
+         lcd_show_int(7, 7, position_X,6);
+         lcd_show_string(0, 8, "PosY:");
+         lcd_show_int(7, 8, position_Y, 6);
         // lcd_show_float(0, 1, diff, 3, 3);
     }
 }
 
 #pragma section all restore
-// **************************** 浠ｇ爜鍖哄煙 ****************************
+// **************************** 娴狅絿鐖滈崠鍝勭厵 ****************************

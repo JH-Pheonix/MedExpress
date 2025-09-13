@@ -54,23 +54,32 @@ void core1_main(void)
 
     // 姝ゅ缂栧啓鐢ㄦ埛浠ｇ爜 渚嬪澶栬鍒濆鍖栦唬鐮佺瓑
     cpu_wait_event_ready();                 // 绛夊緟鎵�鏈夋牳蹇冨垵濮嬪寲瀹屾瘯
-    //curr_state = RUNNING_GUANDAO;
     while(1){
-    while(curr_state != RUNNING_GUANDAO)system_delay_ms(10);
-    move_guandao(-1200,Dir_left);
-    move_guandao(4200,Dir_front);
-    move_guandao(-2000,Dir_left);
-    move_guandao(5500,Dir_front);
-    curr_state=RUNNING_X;
-    while(curr_state != RUNNING_GUANDAO){
-        system_delay_ms(10);
+        while(curr_state != RUNNING_GUANDAO)system_delay_ms(10);
+        path_work(0,4);
+        while(data_camera==0)system_delay_ms(10);
+        system_delay_ms(1000);
+        if(data_camera/10==1){
+            path_work(4,1);
+            curr_state=RUNNING_X;
+            while(curr_state != RUNNING_GUANDAO)system_delay_ms(10);
+            system_delay_ms(2000);
+        }else path_work(4,3);
+        if(data_camera/10==1) path_work(1,3);else{
+            path_work(3,1);
+            curr_state=RUNNING_X;
+            while(curr_state != RUNNING_GUANDAO)system_delay_ms(10);
+            system_delay_ms(2000);
+        }
+        if(data_camera/10==1) path_work(3,0);else path_work(1,0);
+        data_camera=0;
     }
-    system_delay_ms(4000);
-    move_guandao(4200,Dir_back);
-    move_guandao(2000,Dir_right);
-    move_guandao(0,Dir_back);
-    move_guandao(0,Dir_left);
-    }
+    //curr_state = RUNNING_GUANDAO;
+    /*while(1){
+        while(curr_state != RUNNING_GUANDAO)system_delay_ms(10);
+        curr_state=RUNNING_X;
+        while(curr_state != RUNNING_GUANDAO)system_delay_ms(10);
+    }*/
     while (TRUE)
     {
 

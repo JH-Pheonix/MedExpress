@@ -66,3 +66,9 @@ maixcam_message_t maixcam_pop_data()
 {
     return data;
 }
+
+void maixcam_clear() {
+    data.cmd = 0;
+    data.data = 0;
+}
+

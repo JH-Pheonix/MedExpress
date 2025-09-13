@@ -59,18 +59,33 @@ void control_handler()
         motor_set_pwm(&motor4, 0);
         break;
     case RUNNING_X:
-        status = control_pid_pos(&lidar1, &motor3, &motor4, x_tar);
+        /*status = control_pid_pos(&lidar1, &motor3, &motor4, x_tar);
         if (status == 0)
         {
             curr_state = RUNNING_Y;
-        }
+        }*/
+        curr_state = RUNNING_Y;
         break;
     case RUNNING_Y:
-        status = control_pid_pos(&lidar2, &motor2, &motor1, y_tar);
+        if (status1)
+            status1 = control_pid_pos_2(&lidar2, &motor2, &motor1, y_tar, status1);
+        else if (status2)
+            status2 = control_pid_pos_2(&lidar1, &motor3, &motor4, x_tar, status2);
+        if (status1 == 0 && status2 == 0)
+        {
+            //curr_state = RETURNING;
+            status1 = status2 = 4;
+            motor_set_pwm(&motor1, 0);
+            motor_set_pwm(&motor2, 0);
+            motor_set_pwm(&motor3, 0);
+            motor_set_pwm(&motor4, 0);
+            curr_state = ROTATING;
+        }
+        /*status = control_pid_pos(&lidar2, &motor2, &motor1, y_tar);
         if (status == 0)
         {
             curr_state = ROTATING;
-        }
+        }*/
         break;
 
     case ROTATING:
@@ -154,7 +169,7 @@ vuint8 control_pid_pos_2(stp23l_obj_t *lidar, motor_obj_t *motor_a, motor_obj_t 
 {
     stp23l_frame_t lidar_frame;
     stp23l_pop_frame(lidar, &lidar_frame);
-    if (status_now == 4)
+    //if (status_now == 4)
         status_now = 1 + (lidar_frame.points[0].distance > pos_target); // 1 is back,2 is front
 
     if (lidar_frame.points[0].distance- pos_target<=15&&lidar_frame.points[0].distance- pos_target>=-15)
@@ -163,7 +178,15 @@ vuint8 control_pid_pos_2(stp23l_obj_t *lidar, motor_obj_t *motor_a, motor_obj_t 
         motor_set_pwm(motor_b, 0);
         return 0;
     }
+    if(curr_state!=CHECKING)
+        if (lidar_frame.points[0].distance- pos_target<=60&&lidar_frame.points[0].distance- pos_target>=-60)
+        {
+            motor_set_pwm(motor_a, 0);
+            motor_set_pwm(motor_b, 0);
+            return 0;
+        }
     float motor_vel = -550;
+    if(curr_state!=CHECKING) motor_vel=-4000;
     if (status_now == 1)
         motor_vel = -motor_vel;
     motor_set_pwm(motor_a, -motor_vel);
@@ -183,7 +206,7 @@ vuint8 control_pid_pos(stp23l_obj_t *lidar, motor_obj_t *motor_a, motor_obj_t *m
         return 0; // 鍒拌揪
     }
     float turn_diff = control_angle_pid();
-    float motor_vel = control_pos_pid(lidar_frame.points[0].distance + 100, pos_target);
+    float motor_vel = control_pos_pid(lidar_frame.points[0].distance+10, pos_target);
     motor_set_pwm(motor_a, -motor_vel - turn_diff);
     motor_set_pwm(motor_b, motor_vel - turn_diff);
     return 1;
@@ -220,7 +243,12 @@ vuint8 control_rolling(float angle_target)
 
 float position_X=0,position_Y=0;//0front 1back 2left 3right 4stop
 int now_dir=5;
+int data_camera=0;
 void move_guandao(float target_pos,int Dir_now){
+    if(Dir_now==Dir_x&&target_pos>position_X) Dir_now=Dir_front;
+    if(Dir_now==Dir_x&&target_pos<=position_X) Dir_now=Dir_back;
+    if(Dir_now==Dir_y&&target_pos>position_Y) Dir_now=Dir_right;
+    if(Dir_now==Dir_y&&target_pos<=position_Y) Dir_now=Dir_left;
     now_dir=Dir_now;
 
     while(1){
@@ -230,7 +258,7 @@ void move_guandao(float target_pos,int Dir_now){
         if(Dir_now==Dir_right&&position_Y>target_pos) break;
 
         float turn_diff = control_angle_pid();
-        float motor_vel = 6000;
+        float motor_vel = 6500;
         if(Dir_now==Dir_front){
             motor_set_pwm(&motor3, motor_vel- turn_diff);
             motor_set_pwm(&motor4, -motor_vel- turn_diff);
@@ -254,4 +282,47 @@ void move_guandao(float target_pos,int Dir_now){
     motor_set_pwm(&motor3, 0);
     motor_set_pwm(&motor4, 0);
     now_dir=Dir_stop;
+}
+void path_work(int st_point,int ed_point){
+    int nurse_x=1000,midroad_x=4200;
+    int bed_y1=-2000,bed_y3=2000,bed_x=5500;
+    int obstacl_y_L=-2500,obstacl_y_R=1200;
+    if(st_point==0&&ed_point==4){
+        move_guandao(nurse_x,Dir_x);
+    }
+    if((st_point==0||st_point==4)&&ed_point==1){
+        move_guandao(obstacl_y_L,Dir_y);//input of obstacle
+        move_guandao(midroad_x,Dir_x);
+        move_guandao(bed_y1,Dir_y);
+        move_guandao(bed_x,Dir_x);
+    }
+    if((st_point==0||st_point==4)&&ed_point==3){
+        move_guandao(obstacl_y_R,Dir_y);//input of obstacle
+        move_guandao(midroad_x,Dir_x);
+        move_guandao(bed_y3,Dir_y);
+        move_guandao(bed_x,Dir_x);
+    }
+    if(st_point==3&&ed_point==0){
+        move_guandao(midroad_x,Dir_x);
+        move_guandao(obstacl_y_R,Dir_y);//input of obstacle
+        move_guandao(0,Dir_x);
+        move_guandao(0,Dir_y);
+    }
+    if(st_point==1&&ed_point==0){
+        move_guandao(midroad_x,Dir_x);
+        move_guandao(obstacl_y_L,Dir_y);//input of obstacle
+        move_guandao(0,Dir_x);
+        move_guandao(0,Dir_y);
+    }
+    if(st_point==1&&ed_point==3){
+        move_guandao(midroad_x,Dir_x);
+        move_guandao(bed_y3,Dir_y);
+        move_guandao(bed_x,Dir_x);
+    }
+    if(st_point==3&&ed_point==1){
+        move_guandao(midroad_x,Dir_x);
+        move_guandao(bed_y1,Dir_y);
+        move_guandao(bed_x,Dir_x);
+    }
+    //curr_state=RUNNING_X;
 }

@@ -38,8 +38,12 @@ typedef enum
     Dir_back,
     Dir_left,
     Dir_right,
-    Dir_stop
+    Dir_stop,
+    Dir_x,
+    Dir_y
 }control_running_dir_e;
 void move_guandao(float target_pos,int Dir_now);
 extern int now_dir;
+extern int data_camera;
+extern void path_work(int st_point,int ed_point);
 #endif
