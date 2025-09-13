@@ -45,12 +45,11 @@ void maixcam_uart_handler(maixcam_obj_t *maixcam)
                 {
                     switch (maixcam->rx_buf[1])
                     {
-                        printf("ddd");
-                    case 0x01:
+                    case 0x00:
                         data.cmd = maixcam->rx_buf[1];
                         data.data = maixcam->rx_buf[2];
                         break;
-                    case 0x02:
+                    case 0x01:
                         data.cmd = maixcam->rx_buf[1];
                         data.data = maixcam->rx_buf[2];
                         break;
