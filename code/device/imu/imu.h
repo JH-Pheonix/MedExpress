@@ -17,8 +17,8 @@ typedef enum
 
 typedef struct
 {
-    float accel_x, accel_y, accel_z; // 加速度 (m/s²)
-    float gyro_x, gyro_y, gyro_z;    // 角速度 (°/s)
+    float accel_x, accel_y, accel_z; // 鍔犻�熷害 (m/s虏)
+    float gyro_x, gyro_y, gyro_z;    // 瑙掗�熷害 (掳/s)
 } imu_data_t;
 
 #ifdef __cplusplus
@@ -29,7 +29,7 @@ extern "C"
     imu_data_t imu_get_data(void);
     void imu_remove_offset(imu_data_t *data);
     void imu_init_offset(void);
-
+    imu_data_t imu_get_tmp_data();
 #ifdef __cplusplus
 }
 #endif

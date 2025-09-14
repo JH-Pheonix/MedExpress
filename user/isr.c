@@ -58,7 +58,7 @@ IFX_INTERRUPT(cc60_pit_ch1_isr, CCU6_0_CH1_INT_VECTAB_NUM, CCU6_0_CH1_ISR_PRIORI
     interrupt_global_enable(0); // 瀵拷閸氼垯鑵戦弬顓炵サ婵傦拷
     pit_clear_flag(CCU60_CH1);
     attitude_cal();
-    float now_speed = 1000, d_isr = 0.002; // mm/s
+    float now_speed = 1500, d_isr = 0.002; // mm/s
     if (now_dir == Dir_front)
         position_X += d_isr * now_speed;
     if (now_dir == Dir_back)

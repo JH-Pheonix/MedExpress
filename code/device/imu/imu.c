@@ -4,7 +4,8 @@
 float gyroOffset[3] = {0.0f, 0.0f, 0.0f};
 
 static imu_device_enum curr_device;
-static bool imu_state = 1; // 表示初始化状态
+static bool imu_state = 1; // 琛ㄧず鍒濆鍖栫姸鎬�
+static imu_data_t tmp_data = {0};
 
 void imu_init(imu_device_enum device)
 {
@@ -33,7 +34,7 @@ void imu_init(imu_device_enum device)
         break;
     }
 
-    if (!imu_state) // 0 表示初始化成功, 1 表示初始化失败
+    if (!imu_state) // 0 琛ㄧず鍒濆鍖栨垚鍔�, 1 琛ㄧず鍒濆鍖栧け璐�
     {
         // handler logic
         printf("IMU SUCCESS.\n");
@@ -47,12 +48,12 @@ void imu_init(imu_device_enum device)
 
 imu_data_t imu_get_data(void)
 {
-    imu_data_t data = {0}; // 初始化为0
+    imu_data_t data = {0}; // 鍒濆鍖栦负0
 
     if (imu_state)
     {
         printf("IMU device not initialized.\n");
-        return data; // 返回默认值
+        return data; // 杩斿洖榛樿鍊�
     }
 
     switch (curr_device)
@@ -105,6 +106,8 @@ imu_data_t imu_get_data(void)
         break;
     }
 
+    tmp_data = data;
+
     return data;
 }
 
@@ -135,4 +138,8 @@ void imu_remove_offset(imu_data_t *data)
     data->gyro_x -= gyroOffset[0];
     data->gyro_y -= gyroOffset[1];
     data->gyro_z -= gyroOffset[2];
+}
+
+imu_data_t imu_get_tmp_data() {
+    return tmp_data;
 }

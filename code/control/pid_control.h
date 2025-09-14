@@ -23,7 +23,7 @@ void control_handler(void);
 float control_angle_pid(void);
 float control_pos_pid(int16 distance, float);
 vuint8 control_pid_pos(stp23l_obj_t *lidar, motor_obj_t *motor_a, motor_obj_t *motor_b, float pos_target);
-vuint8 control_pid_pos_2(stp23l_obj_t *lidar, motor_obj_t *motor_a, motor_obj_t *motor_b, float pos_target,vuint8 status_now);
+vuint8 control_pid_pos_2(stp23l_obj_t *lidar, float pos_target,vuint8 status_now);
 vuint8 control_rolling(float angle_target);
 
 extern float angle_tar;
@@ -46,4 +46,6 @@ void move_guandao(float target_pos,int Dir_now);
 extern int now_dir;
 extern int data_camera;
 extern void path_work(int st_point,int ed_point);
+void open_dir_motor(int Dir_now,float motor_vel,float turn_diff);
+extern int move_mode;
 #endif

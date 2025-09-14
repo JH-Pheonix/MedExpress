@@ -6,7 +6,7 @@
 
 pid_type_def angle_pid;
 pid_type_def pos_pid;
-float pos_pid_params[3] = {5.0, 0.0f, 0.0f};
+float pos_pid_params[3] = {8.0, 0.0f, 0.0f};
 float angle_pid_params[3] = {200.0f, 0.0f, 0.0f};
 
 float x_tar = 0.0f;
@@ -22,11 +22,6 @@ vuint8 status2 = 4;
 
 control_running_mode_e curr_state = WAITING_ANGLE;
 
-void control_init(void)
-{
-    pid_init(&angle_pid, angle_pid_params, 9999, 9999);
-    pid_init(&pos_pid, pos_pid_params, 5000, 9999);
-}
 
 float control_angle_pid()
 {
@@ -67,10 +62,11 @@ void control_handler()
         curr_state = RUNNING_Y;
         break;
     case RUNNING_Y:
-        if (status1)
-            status1 = control_pid_pos_2(&lidar2, &motor2, &motor1, y_tar, status1);
-        else if (status2)
-            status2 = control_pid_pos_2(&lidar1, &motor3, &motor4, x_tar, status2);
+        if (status2)
+           status2 = control_pid_pos_2(&lidar1, x_tar, Dir_x);
+        else if (status1)
+            status1 = control_pid_pos_2(&lidar2, y_tar, Dir_y);
+
         if (status1 == 0 && status2 == 0)
         {
             //curr_state = RETURNING;
@@ -97,16 +93,11 @@ void control_handler()
         break;
     case CHECKING:
 
-        // checking_timeout++;
-        //  if (checking_timeout > 300)
-        //  {
-        //      curr_state = RETURNING;
-        //      break;
-        //  }
-        if (status1)
-            status1 = control_pid_pos_2(&lidar2, &motor2, &motor1, y_tar, status1);
-        else if (status2)
-            status2 = control_pid_pos_2(&lidar1, &motor3, &motor4, x_tar, status2);
+        if (status2)
+           status2 = control_pid_pos_2(&lidar1, x_tar, Dir_x);
+        else if (status1)
+            status1 = control_pid_pos_2(&lidar2, y_tar, Dir_y);
+
         if (status1 == 0 && status2 == 0)
         {
             //curr_state = RETURNING;
@@ -165,34 +156,36 @@ void control_handler()
         break;
     }
 }
-vuint8 control_pid_pos_2(stp23l_obj_t *lidar, motor_obj_t *motor_a, motor_obj_t *motor_b, float pos_target, vuint8 status_now)
+vuint8 control_pid_pos_2(stp23l_obj_t *lidar, float pos_target, vuint8 Dir_now)
 {
     stp23l_frame_t lidar_frame;
     stp23l_pop_frame(lidar, &lidar_frame);
-    //if (status_now == 4)
-        status_now = 1 + (lidar_frame.points[0].distance > pos_target); // 1 is back,2 is front
-
+    int status_now = 1 + (lidar_frame.points[0].distance > pos_target); // 1 is back,2 is front
+    if(Dir_now==Dir_x&&status_now==1) Dir_now=Dir_back;
+    if(Dir_now==Dir_x&&status_now==2) Dir_now=Dir_front;
+    if(Dir_now==Dir_y&&status_now==1) Dir_now=Dir_right;//which one bed to choose
+    if(Dir_now==Dir_y&&status_now==2) Dir_now=Dir_left;//which one bed to choose
     if (lidar_frame.points[0].distance- pos_target<=15&&lidar_frame.points[0].distance- pos_target>=-15)
     {
-        motor_set_pwm(motor_a, 0);
-        motor_set_pwm(motor_b, 0);
+        motor_set_pwm(&motor1, 0);
+        motor_set_pwm(&motor2, 0);
+        motor_set_pwm(&motor3, 0);
+        motor_set_pwm(&motor4, 0);
         return 0;
     }
     if(curr_state!=CHECKING)
         if (lidar_frame.points[0].distance- pos_target<=60&&lidar_frame.points[0].distance- pos_target>=-60)
         {
-            motor_set_pwm(motor_a, 0);
-            motor_set_pwm(motor_b, 0);
+            motor_set_pwm(&motor1, 0);
+            motor_set_pwm(&motor2, 0);
+            motor_set_pwm(&motor3, 0);
+            motor_set_pwm(&motor4, 0);
             return 0;
         }
-    float motor_vel = -550;
-    if(curr_state!=CHECKING) motor_vel=-4000;
-    if (status_now == 1)
-        motor_vel = -motor_vel;
-    motor_set_pwm(motor_a, -motor_vel);
-    motor_set_pwm(motor_b, motor_vel);
-    // motor_set_pwm(motor_a, -motor_vel - turn_diff);
-    // motor_set_pwm(motor_b, motor_vel - turn_diff);
+    float motor_vel = 550;
+    if(curr_state!=CHECKING) motor_vel=4000;
+
+    open_dir_motor(Dir_now,motor_vel,0);
     return status_now;
 }
 vuint8 control_pid_pos(stp23l_obj_t *lidar, motor_obj_t *motor_a, motor_obj_t *motor_b, float pos_target)
@@ -243,7 +236,7 @@ vuint8 control_rolling(float angle_target)
 
 float position_X=0,position_Y=0;//0front 1back 2left 3right 4stop
 int now_dir=5;
-int data_camera=0;
+int data_camera=0,move_mode=1;//0simple 1diffcult
 void move_guandao(float target_pos,int Dir_now){
     if(Dir_now==Dir_x&&target_pos>position_X) Dir_now=Dir_front;
     if(Dir_now==Dir_x&&target_pos<=position_X) Dir_now=Dir_back;
@@ -256,25 +249,9 @@ void move_guandao(float target_pos,int Dir_now){
         if(Dir_now==Dir_back&&position_X<target_pos) break;
         if(Dir_now==Dir_left&&position_Y<target_pos) break;
         if(Dir_now==Dir_right&&position_Y>target_pos) break;
-
         float turn_diff = control_angle_pid();
-        float motor_vel = 6500;
-        if(Dir_now==Dir_front){
-            motor_set_pwm(&motor3, motor_vel- turn_diff);
-            motor_set_pwm(&motor4, -motor_vel- turn_diff);
-        }
-        if(Dir_now==Dir_back){
-            motor_set_pwm(&motor3, -motor_vel- turn_diff);
-            motor_set_pwm(&motor4, motor_vel- turn_diff);
-        }
-        if(Dir_now==Dir_left){
-            motor_set_pwm(&motor1, -motor_vel- turn_diff);
-            motor_set_pwm(&motor2, motor_vel- turn_diff);
-        }
-        if(Dir_now==Dir_right){
-            motor_set_pwm(&motor1, motor_vel- turn_diff);
-            motor_set_pwm(&motor2, -motor_vel- turn_diff);
-        }
+        float motor_vel = 6500-move_mode*1000;
+        open_dir_motor(Dir_now,motor_vel,turn_diff);
     }
 
     motor_set_pwm(&motor1, 0);
@@ -282,6 +259,53 @@ void move_guandao(float target_pos,int Dir_now){
     motor_set_pwm(&motor3, 0);
     motor_set_pwm(&motor4, 0);
     now_dir=Dir_stop;
+}
+void open_dir_motor(int Dir_now,float motor_vel,float turn_diff){
+    if(Dir_now==Dir_front&&move_mode==0){
+        motor_set_pwm(&motor3, motor_vel- turn_diff);
+        motor_set_pwm(&motor4, -motor_vel- turn_diff);
+    }
+    if(Dir_now==Dir_back&&move_mode==0){
+        motor_set_pwm(&motor3, -motor_vel- turn_diff);
+        motor_set_pwm(&motor4, motor_vel- turn_diff);
+    }
+    if(Dir_now==Dir_left&&move_mode==0){
+        motor_set_pwm(&motor1, -motor_vel- turn_diff);
+        motor_set_pwm(&motor2, motor_vel- turn_diff);
+    }
+    if(Dir_now==Dir_right&&move_mode==0){
+        motor_set_pwm(&motor1, motor_vel- turn_diff);
+        motor_set_pwm(&motor2, -motor_vel- turn_diff);
+    }
+
+    if(Dir_now==Dir_front&&move_mode==1){
+        motor_set_pwm(&motor3, motor_vel- turn_diff);
+        motor_set_pwm(&motor4, -motor_vel- turn_diff);//front
+
+        motor_set_pwm(&motor1, -motor_vel- turn_diff);
+        motor_set_pwm(&motor2, motor_vel- turn_diff);//left
+    }
+    if(Dir_now==Dir_back&&move_mode==1){
+        motor_set_pwm(&motor3, -motor_vel- turn_diff);
+        motor_set_pwm(&motor4, motor_vel- turn_diff);//back
+
+        motor_set_pwm(&motor1, motor_vel- turn_diff);
+        motor_set_pwm(&motor2, -motor_vel- turn_diff);//right
+    }
+    if(Dir_now==Dir_left&&move_mode==1){
+        motor_set_pwm(&motor1, -motor_vel- turn_diff);
+        motor_set_pwm(&motor2, motor_vel- turn_diff);//left
+
+        motor_set_pwm(&motor3, -motor_vel- turn_diff);
+        motor_set_pwm(&motor4, motor_vel- turn_diff);//back
+    }
+    if(Dir_now==Dir_right&&move_mode==1){
+        motor_set_pwm(&motor1, motor_vel- turn_diff);
+        motor_set_pwm(&motor2, -motor_vel- turn_diff);//right
+
+        motor_set_pwm(&motor3, motor_vel- turn_diff);
+        motor_set_pwm(&motor4, -motor_vel- turn_diff);//front
+    }
 }
 void path_work(int st_point,int ed_point){
     int nurse_x=1000,midroad_x=4200;
@@ -325,4 +349,11 @@ void path_work(int st_point,int ed_point){
         move_guandao(bed_x,Dir_x);
     }
     //curr_state=RUNNING_X;
+}
+void control_init(void)
+{
+    pid_init(&angle_pid, angle_pid_params, 9999, 9999);
+    pid_init(&pos_pid, pos_pid_params, 5000, 9999);
+    if(move_mode==0) pos_pid_params[0] = 8.0;
+    else pos_pid_params[0] = 0.5;
 }

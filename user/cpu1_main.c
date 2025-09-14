@@ -54,6 +54,9 @@ void core1_main(void)
 
     // 姝ゅ缂栧啓鐢ㄦ埛浠ｇ爜 渚嬪澶栬鍒濆鍖栦唬鐮佺瓑
     cpu_wait_event_ready();                 // 绛夊緟鎵�鏈夋牳蹇冨垵濮嬪寲瀹屾瘯
+    //move_guandao(100000,Dir_y);
+    //while(1);
+    data_camera=13;
     while(1){
         while(curr_state != RUNNING_GUANDAO)system_delay_ms(10);
         path_work(0,4);
