@@ -3,8 +3,10 @@
 
 #include "zf_driver_uart.h"
 #include "zf_driver_gpio.h"
+#include "zf_common_typedef.h"
 
-#define MAIXCAM_RX_BUF_SIZE 10
+#define MAIXCAM_RX_BUF_SIZE 64
+#define MAIXCAM_PAYLOAD_MAX 60
 
 typedef struct
 {
@@ -16,7 +18,8 @@ typedef struct
 typedef struct
 {
     vuint8 cmd;
-    vuint8 data;
+    vuint8 len; // payload 长度
+    vuint64 data;
 } maixcam_message_t;
 
 maixcam_obj_t maixcam_uart_init(uart_index_enum uartn, uart_rx_pin_enum rx_pin, uart_tx_pin_enum tx_pin, vuint32 baud);
