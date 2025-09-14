@@ -29,6 +29,7 @@ extern "C"
     imu_data_t imu_get_data(void);
     void imu_remove_offset(imu_data_t *data);
     void imu_init_offset(void);
+    imu_data_t imu_get_tmp_data();
 
 #ifdef __cplusplus
 }

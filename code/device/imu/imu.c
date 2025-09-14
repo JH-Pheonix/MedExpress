@@ -5,6 +5,7 @@ float gyroOffset[3] = {0.0f, 0.0f, 0.0f};
 
 static imu_device_enum curr_device;
 static bool imu_state = 1; // 表示初始化状态
+static imu_data_t tmp_data = {0};
 
 void imu_init(imu_device_enum device)
 {
@@ -105,6 +106,8 @@ imu_data_t imu_get_data(void)
         break;
     }
 
+    tmp_data = data;
+
     return data;
 }
 
@@ -135,4 +138,9 @@ void imu_remove_offset(imu_data_t *data)
     data->gyro_x -= gyroOffset[0];
     data->gyro_y -= gyroOffset[1];
     data->gyro_z -= gyroOffset[2];
+}
+
+imu_data_t imu_get_tmp_data()
+{
+    return tmp_data;
 }
