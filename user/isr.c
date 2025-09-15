@@ -57,6 +57,15 @@ IFX_INTERRUPT(cc60_pit_ch1_isr, CCU6_0_CH1_INT_VECTAB_NUM, CCU6_0_CH1_ISR_PRIORI
     interrupt_global_enable(0); // 开启中断嵌套
     pit_clear_flag(CCU60_CH1);
     attitude_cal();
+    float now_speed = 1500, d_isr = 0.002; // mm/s
+    if (now_dir == Dir_front)
+        position_X += d_isr * now_speed;
+    if (now_dir == Dir_back)
+        position_X -= d_isr * now_speed;
+    if (now_dir == Dir_right)
+        position_Y += d_isr * now_speed;
+    if (now_dir == Dir_left)
+        position_Y -= d_isr * now_speed;
 }
 
 IFX_INTERRUPT(cc61_pit_ch0_isr, CCU6_1_CH0_INT_VECTAB_NUM, CCU6_1_CH0_ISR_PRIORITY)
