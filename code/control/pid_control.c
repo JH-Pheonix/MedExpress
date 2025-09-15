@@ -26,20 +26,62 @@ void control_init(void)
     pid_init(&pos_pid, pos_pid_params, 5000, 9999);
 }
 
+// 角度环
 float control_angle_pid()
 {
-    // if (g_euler_angle.yaw > 180.0f)
-    //     g_euler_angle.yaw -= 360.0f;
-    // else if (g_euler_angle.yaw < -180.0f)
-    //     g_euler_angle.yaw += 360.0f;
     float angle_out = pid_position(&angle_pid, g_euler_angle.yaw, angle_tar);
     return angle_out;
 }
 
+// 位置环
 float control_pos_pid(int16 distance, float pos_tar)
 {
     float pos_out = pid_position(&pos_pid, distance, pos_tar);
     return pos_out;
+}
+
+vuint8 control_pid_to_pos(stp23l_obj_t *lidar, motor_obj_t *motor_a, motor_obj_t *motor_b, float pos_target)
+{
+    stp23l_frame_t lidar_frame;
+    stp23l_pop_frame(lidar, &lidar_frame);
+    if (lidar_frame.points[0].distance - pos_target <= 10 && lidar_frame.points[0].distance != 0)
+    {
+        motor_set_pwm(motor_a, 0);
+        motor_set_pwm(motor_b, 0);
+        return 0; // 到达
+    }
+    float motor_vel = control_pos_pid(lidar_frame.points[0].distance + 100, pos_target);
+    motor_set_pwm(motor_a, -motor_vel);
+    motor_set_pwm(motor_b, motor_vel);
+    return 1;
+}
+
+vuint8 control_stable_rolling(float angle_target, float yaw)
+{
+    if (angle_target - yaw >= 0.1 || angle_target - yaw <= -0.1)
+    {
+        if (angle_target - yaw >= 0)
+        {
+            motor_set_pwm(&motor1, -400);
+            motor_set_pwm(&motor2, -400);
+            motor_set_pwm(&motor3, -400);
+            motor_set_pwm(&motor4, -400);
+        }
+        else if (angle_target - yaw < 0)
+        {
+            motor_set_pwm(&motor1, 400);
+            motor_set_pwm(&motor2, 400);
+            motor_set_pwm(&motor3, 400);
+            motor_set_pwm(&motor4, 400);
+        }
+        return 1; // 未到达
+    }
+    motor_set_pwm(&motor1, 0);
+    motor_set_pwm(&motor2, 0);
+    motor_set_pwm(&motor3, 0);
+    motor_set_pwm(&motor4, 0);
+
+    return 0; // 到达
 }
 
 void control_handler()
@@ -55,14 +97,14 @@ void control_handler()
         motor_set_pwm(&motor4, 0);
         break;
     case RUNNING_X:
-        status = control_pid_pos(&lidar1, &motor3, &motor4, x_tar);
+        status = control_pid_to_pos(&lidar1, &motor3, &motor4, x_tar);
         if (status == 0)
         {
             curr_state = RUNNING_Y;
         }
         break;
     case RUNNING_Y:
-        status = control_pid_pos(&lidar2, &motor2, &motor1, y_tar);
+        status = control_pid_to_pos(&lidar2, &motor2, &motor1, y_tar);
         if (status == 0)
         {
             curr_state = ROTATING;
@@ -70,7 +112,7 @@ void control_handler()
         break;
 
     case ROTATING:
-        status = control_rolling(angle_tar);
+        status = control_stable_rolling(angle_tar, g_euler_angle.yaw);
         if (status == 0)
         {
             curr_state = CHECKING;
@@ -78,8 +120,8 @@ void control_handler()
         break;
     case CHECKING:
 
-        status1 = control_pid_pos(&lidar2, &motor2, &motor1, y_tar);
-        status2 = control_pid_pos(&lidar1, &motor3, &motor4, x_tar);
+        status1 = control_pid_to_pos(&lidar2, &motor2, &motor1, y_tar);
+        status2 = control_pid_to_pos(&lidar1, &motor3, &motor4, x_tar);
 
         if (status1 == 0 && status2 == 0)
         {
@@ -131,49 +173,4 @@ void control_handler()
     default:
         break;
     }
-}
-
-vuint8 control_pid_pos(stp23l_obj_t *lidar, motor_obj_t *motor_a, motor_obj_t *motor_b, float pos_target)
-{
-    stp23l_frame_t lidar_frame;
-    stp23l_pop_frame(lidar, &lidar_frame);
-    if (lidar_frame.points[0].distance - pos_target <= 10 && lidar_frame.points[0].distance != 0)
-    {
-        motor_set_pwm(motor_a, 0);
-        motor_set_pwm(motor_b, 0);
-        return 0; // 到达
-    }
-    float turn_diff = control_angle_pid();
-    float motor_vel = control_pos_pid(lidar_frame.points[0].distance + 100, pos_target);
-    motor_set_pwm(motor_a, -motor_vel - turn_diff);
-    motor_set_pwm(motor_b, motor_vel - turn_diff);
-    return 1;
-}
-
-vuint8 control_rolling(float angle_target)
-{
-    if (angle_target - g_euler_angle.yaw >= 0.1 || angle_target - g_euler_angle.yaw <= -0.1)
-    {
-        if (angle_target - g_euler_angle.yaw >= 0)
-        {
-            motor_set_pwm(&motor1, -400);
-            motor_set_pwm(&motor2, -400);
-            motor_set_pwm(&motor3, -400);
-            motor_set_pwm(&motor4, -400);
-        }
-        else if (angle_target - g_euler_angle.yaw < 0)
-        {
-            motor_set_pwm(&motor1, 400);
-            motor_set_pwm(&motor2, 400);
-            motor_set_pwm(&motor3, 400);
-            motor_set_pwm(&motor4, 400);
-        }
-        return 1; // 未到达
-    }
-    motor_set_pwm(&motor1, 0);
-    motor_set_pwm(&motor2, 0);
-    motor_set_pwm(&motor3, 0);
-    motor_set_pwm(&motor4, 0);
-
-    return 0; // 到达
 }
