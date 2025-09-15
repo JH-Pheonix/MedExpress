@@ -62,32 +62,42 @@ int core0_main(void)
     cpu_wait_event_ready(); // 等待所有核心初始化完毕
     while (TRUE)
     {
-        system_delay_ms(100);
+        system_delay_ms(2);
         // stp23l_pop_frame(&lidar1, &lidar1_frame);
         // stp23l_pop_frame(&lidar2, &lidar2_frame);
 
-        // lcd_show_int(0, 0, lidar1_frame.points[0].distance, 7);
-        // lcd_show_int(8, 0, lidar2_frame.points[0].distance, 7);
+        // lcd_show_int(0, 0, lidar1_frame.points[11].distance, 7);
+        // lcd_show_int(8, 0, lidar2_frame.points[11].distance, 7);
         if (keymsg.key == KEY_L)
         {
             if (curr_state == WAITING_RUNNING)
             {
-                system_delay_ms(1000);
-                curr_state = RUNNING_X;
+                lcd_show_string(0, 0, "status:");
+                lcd_show_int(8, 0, curr_state, 1);
+                system_delay_ms(1500);
+                curr_state = RUNNING_GUANDAO;
             }
             else if (curr_state == WAITING_ANGLE)
             {
-                system_delay_ms(1000);
+                lcd_show_string(0, 0, "status:");
+                lcd_show_int(8, 0, curr_state, 1);
+                system_delay_ms(1500);
                 curr_state = WAITING_RUNNING;
                 angle_tar = g_euler_angle.yaw;
                 stp23l_frame_t lidar_frame;
                 stp23l_pop_frame(&lidar1, &lidar_frame);
-                x_tar = lidar_frame.points[0].distance;
+                x_tar = lidar_frame.points[11].distance;
                 stp23l_pop_frame(&lidar2, &lidar_frame);
-                y_tar = lidar_frame.points[0].distance;
+                y_tar = lidar_frame.points[11].distance;
             }
         }
-
+        maixcam_message_t data;
+        data = maixcam_pop_data();
+        lcd_show_uint(0, 9, data.cmd, 3);
+        lcd_show_uint(8, 9, data.data, 3);
+        if (data_camera == 0 && data.data != 0)
+            data_camera = data.data;
+        maixcam_clear();
         lcd_show_string(0, 0, "status:");
         lcd_show_int(8, 0, curr_state, 1);
         lcd_show_string(0, 1, "atar:");
@@ -101,10 +111,15 @@ int core0_main(void)
         stp23l_frame_t tmp;
         stp23l_pop_frame(&lidar1, &tmp);
         lcd_show_string(0, 5, "lidar1:");
-        lcd_show_int(7, 5, tmp.points[0].distance, 6);
+        lcd_show_int(7, 5, tmp.points[11].distance, 6);
         lcd_show_string(0, 6, "lidar2:");
         stp23l_pop_frame(&lidar2, &tmp);
-        lcd_show_int(7, 6, tmp.points[0].distance, 6);
+        lcd_show_int(7, 6, tmp.points[11].distance, 6);
+
+        lcd_show_string(0, 7, "PosX:");
+        lcd_show_int(7, 7, position_X, 6);
+        lcd_show_string(0, 8, "PosY:");
+        lcd_show_int(7, 8, position_Y, 6);
         // lcd_show_float(0, 1, diff, 3, 3);
     }
 }
