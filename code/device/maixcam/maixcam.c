@@ -1,4 +1,5 @@
 #include "maixcam.h"
+#include <string.h>
 
 maixcam_message_t data;
 
@@ -24,6 +25,19 @@ static vuint64 parse_payload(vuint8 cmd, vuint8 *payload, vuint8 len)
     default:
         return 0;
     }
+}
+
+static inline void discard_bytes(maixcam_obj_t *maixcam, int n)
+{
+    if (n <= 0)
+        return;
+    if (n >= maixcam->data_cnt)
+    {
+        maixcam->data_cnt = 0;
+        return;
+    }
+    memmove(maixcam->rx_buf, maixcam->rx_buf + n, maixcam->data_cnt - n);
+    maixcam->data_cnt -= n;
 }
 
 maixcam_obj_t maixcam_uart_init(uart_index_enum uartn, uart_rx_pin_enum rx_pin, uart_tx_pin_enum tx_pin, vuint32 baud)
@@ -90,11 +104,7 @@ void maixcam_uart_handler(maixcam_obj_t *maixcam)
                 }
 
                 // 将剩余数据左移
-                for (int i = 0; i < maixcam->data_cnt - idx; i++)
-                {
-                    maixcam->rx_buf[i] = maixcam->rx_buf[idx + i];
-                }
-                maixcam->data_cnt -= idx;
+                discard_bytes(maixcam, idx);
 
                 if (maixcam->data_cnt < 4)
                     break; // 数据不足以构成最短帧，等待更多字节
@@ -104,9 +114,7 @@ void maixcam_uart_handler(maixcam_obj_t *maixcam)
             if (len > MAIXCAM_PAYLOAD_MAX)
             {
                 // 非法长度，丢弃首字节继续解析
-                for (int i = 0; i < maixcam->data_cnt - 1; i++)
-                    maixcam->rx_buf[i] = maixcam->rx_buf[i + 1];
-                maixcam->data_cnt--;
+                discard_bytes(maixcam, 1);
                 continue;
             }
 
@@ -141,10 +149,8 @@ void maixcam_uart_handler(maixcam_obj_t *maixcam)
                 // 移除已解析的帧
                 if (maixcam->data_cnt > need)
                 {
-                    int remain = maixcam->data_cnt - need;
-                    for (int i = 0; i < remain; i++)
-                        maixcam->rx_buf[i] = maixcam->rx_buf[need + i];
-                    maixcam->data_cnt = remain;
+                    // 使用 discard_bytes 将已解析的部分一次性移除
+                    discard_bytes(maixcam, need);
                     // 继续尝试解析下一个帧（如果有）
                     continue;
                 }
@@ -158,9 +164,7 @@ void maixcam_uart_handler(maixcam_obj_t *maixcam)
             else
             {
                 // 校验失败，丢弃首字节继续解析
-                for (int i = 0; i < maixcam->data_cnt - 1; i++)
-                    maixcam->rx_buf[i] = maixcam->rx_buf[i + 1];
-                maixcam->data_cnt--;
+                discard_bytes(maixcam, 1);
                 continue;
             }
         }
