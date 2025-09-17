@@ -8,6 +8,7 @@
 #include "Attitude.h"
 #include "stp23l.h"
 #include "maixcam.h"
+#include "asrpro.h"
 
 void system_init(void);
 
@@ -20,5 +21,7 @@ extern stp23l_obj_t lidar1;
 extern stp23l_obj_t lidar2;
 
 extern maixcam_obj_t maixcam1;
+
+extern asrpro_obj_t asrpro1;
 
 #endif

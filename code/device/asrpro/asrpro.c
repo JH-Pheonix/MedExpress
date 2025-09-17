@@ -9,8 +9,9 @@ asrpro_obj_t asrpro_init(uart_index_enum uartn, uart_rx_pin_enum rx_pin, uart_tx
     asrpro.data_cnt = 0;
     asrpro.ack = 0;
 
-    uart_init(uartn, rx_pin, tx_pin, baud);
+    uart_init(uartn, baud, tx_pin, rx_pin);
     uart_rx_interrupt(uartn, 1);
+    return asrpro;
 }
 
 static inline void discard_bytes(asrpro_obj_t *asrpro, int n)
@@ -152,23 +153,41 @@ void asrpro_reset_ack(asrpro_obj_t *asrpro)
     asrpro->ack = 0;
 }
 
+vuint8 asrpro_get_ack(asrpro_obj_t *asrpro)
+{
+    return asrpro->ack;
+}
+
 void asrpro_set_status(asrpro_obj_t *asrpro, vuint8 status)
 {
     switch (status)
     {
     case 1:
         while (asrpro->ack == 0)
+        {
+            // if (asrpro->uartn == UART_2)
+            //     printf("one\n");
+            // else
+            //     printf("not uart2\n");
             uart_write_string(asrpro->uartn, "one\n");
+            system_delay_ms(100);
+        }
         break;
 
     case 2:
         while (asrpro->ack == 0)
+        {
             uart_write_string(asrpro->uartn, "two\n");
+            system_delay_ms(100);
+        }
         break;
 
     case 3:
         while (asrpro->ack == 0)
+        {
             uart_write_string(asrpro->uartn, "three\n");
+            system_delay_ms(100);
+        }
         break;
 
     default:

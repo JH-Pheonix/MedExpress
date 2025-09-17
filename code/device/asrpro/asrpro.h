@@ -16,6 +16,7 @@ typedef struct
 asrpro_obj_t asrpro_init(uart_index_enum uartn, uart_rx_pin_enum rx_pin, uart_tx_pin_enum tx_pin, vuint32 baud);
 void asrpro_uart_handler(asrpro_obj_t *asrpro);
 void asrpro_reset_ack(asrpro_obj_t *asrpro);
+vuint8 asrpro_get_ack(asrpro_obj_t *asrpro);
 void asrpro_set_status(asrpro_obj_t *asrpro, vuint8 status);
 
 #endif
