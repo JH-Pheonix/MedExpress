@@ -16,6 +16,8 @@ maixcam_obj_t maixcam1;
 
 asrpro_obj_t asrpro1;
 
+emm42_obj_t emm42_1;
+
 void system_init(void)
 {
 
@@ -32,6 +34,8 @@ void system_init(void)
     maixcam1 = maixcam_uart_init(UART_10, UART10_RX_P13_1, UART10_TX_P00_8, 115200);
 
     asrpro1 = asrpro_init(UART_2, UART2_RX_P33_8, UART2_TX_P33_9, 9600);
+
+    emm42_1 = emm42_init(UART_5, UART5_RX_P22_3, UART5_TX_P22_2, 115200, EMM42_CHKSUM_CONST_6B);
 
     imu_init(IMU_DEVICE_963RA);
     attitude_init(ATTITUDE_EKF);
