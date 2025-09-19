@@ -37,7 +37,7 @@
 #include "key.h"
 #include "isr_config.h"
 #include "isr.h"
-#include "Attitude.h"
+#include "attitude.h"
 #include "pid_control.h"
 #include "asrpro.h"
 #include "init.h"

@@ -5,7 +5,7 @@
 #include "motor.h"
 #include "key.h"
 #include "lcd.h"
-#include "Attitude.h"
+#include "attitude.h"
 #include "stp23l.h"
 #include "maixcam.h"
 #include "asrpro.h"

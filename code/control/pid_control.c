@@ -1,6 +1,6 @@
 #include "pid_control.h"
 #include "pid.h"
-#include "Attitude.h"
+#include "attitude.h"
 
 #include "init.h"
 
