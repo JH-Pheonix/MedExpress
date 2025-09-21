@@ -37,7 +37,7 @@
 #include "imu.h"
 #include "lcd.h"
 #include "key.h"
-#include "Attitude.h"
+#include "attitude.h"
 #include "pid_control.h"
 #include "stp23l.h"
 

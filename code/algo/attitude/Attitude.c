@@ -83,3 +83,18 @@ void attitude_cal()
     // g_euler_angle.yaw > 360 ? (g_euler_angle.yaw -= 360)
     //                         : g_euler_angle.yaw; // 0~360
 }
+
+float attitude_get_yaw()
+{
+    return g_euler_angle.yaw;
+}
+
+float attitude_get_pitch()
+{
+    return g_euler_angle.pitch;
+}
+
+float attitude_get_roll()
+{
+    return g_euler_angle.roll;
+}
