@@ -20,11 +20,16 @@ extern motor_obj_t motor4;
 
 extern stp23l_obj_t lidar1;
 extern stp23l_obj_t lidar2;
+extern stp23l_obj_t lidar3;
 
 extern maixcam_obj_t maixcam1;
 
 extern asrpro_obj_t asrpro1;
 
 extern emm42_obj_t emm42_1;
+
+#define lidar_left lidar2
+#define lidar_right lidar1
+#define lidar_front lidar3
 
 #endif
