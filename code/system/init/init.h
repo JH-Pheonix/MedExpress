@@ -10,6 +10,7 @@
 #include "maixcam.h"
 #include "asrpro.h"
 #include "emm42.h"
+#include "servo.h"
 
 void system_init(void);
 

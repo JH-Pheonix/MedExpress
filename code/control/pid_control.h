@@ -20,8 +20,8 @@ typedef enum
 
 void control_init(void);
 void control_handler(void);
-float control_angle_pid(void);
-float control_pos_pid(int16 distance, float);
+float pid_angle_control(void);
+float pid_pos_control(int16 distance, float);
 vuint8 control_pid_pos(stp23l_obj_t *lidar, motor_obj_t *motor_a, motor_obj_t *motor_b, float pos_target);
 vuint8 control_rolling(float angle_target);
 

@@ -1,4 +1,4 @@
-#include "statemachine.h"
+#include "state.h"
 
 static void event_waitting_pos();
 static void handle_nurse_qrcode();
