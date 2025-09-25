@@ -11,6 +11,7 @@
 #include "asrpro.h"
 #include "emm42.h"
 #include "servo.h"
+#include "MAX30102.h"
 
 void system_init(void);
 
@@ -28,6 +29,8 @@ extern maixcam_obj_t maixcam1;
 extern asrpro_obj_t asrpro1;
 
 extern emm42_obj_t emm42_1;
+
+extern MAX30102_obj_t MAX30102;
 
 #define lidar_left lidar2
 #define lidar_right lidar1
