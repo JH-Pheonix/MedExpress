@@ -13,8 +13,7 @@ typedef struct
     float max_angle;
 } servo_obj_t;
 
-servo_obj_t servo_init(pwm_channel_enum pin, vuint32 freq, float min_pulse, float max_pulse, float max_angle);
-
+servo_obj_t servo_init(pwm_channel_enum pin, vuint32 freq, vuint32 duty, float min_pulse, float max_pulse, float max_angle);
 void servo_set_angle(servo_obj_t *obj, float angle);
 
 #endif
