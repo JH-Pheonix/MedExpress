@@ -29,26 +29,26 @@ void system_init(void)
     servo_left = servo_init(ATOM1_CH2_P33_11, 50, 0, 0.5, 2.5, 180);
     servo_right = servo_init(ATOM3_CH1_P33_5, 50, 0, 0.5, 2.5, 180); // 50Hz, 0.5ms~2.5ms, 360度
 
-    system_delay_ms(5000);
+    emm42_1 = emm42_init(UART_5, UART5_RX_P22_3, UART5_TX_P22_2, 115200, EMM42_CHKSUM_CONST_6B);
+
+    system_delay_ms(1000);
+    emm42_position_mode_cmd(&emm42_1, 0, 1, 600, 0, 6 * 3200, 0, 0);
+    emm42_send_cmd(&emm42_1);
+    system_delay_ms(500);
+
     servo_set_angle(&servo_left, 90);
     servo_set_angle(&servo_right, 90);
 
-    system_delay_ms(5000);
+    system_delay_ms(2000);
     servo_set_angle(&servo_left, 180);
     servo_set_angle(&servo_right, 0);
-    // system_delay_ms(5000);
-    // servo_set_angle(&servo_left, 90);
-    // emm42_1 = emm42_init(UART_5, UART5_RX_P22_3, UART5_TX_P22_2, 115200, EMM42_CHKSUM_CONST_6B);
 
-    // system_delay_ms(1000);
-    // emm42_position_mode_cmd(&emm42_1, 0, 1, 600, 0, 6 * 3200, 0, 0);
-    // emm42_send_cmd(&emm42_1);
-    // system_delay_ms(5000);
-    // emm42_position_mode_cmd(&emm42_1, 0, 0, 600, 0, 6 * 3200, 0, 0);
-    // emm42_send_cmd(&emm42_1);
 
-    // while (1)
-    //     ;
+    emm42_position_mode_cmd(&emm42_1, 0, 0, 600, 0, 6 * 3200, 0, 0);
+    emm42_send_cmd(&emm42_1);
+
+    while (1)
+        ;
     // MAX30102 = MAX30102_init(P13_0, P13_1);
 
     // lcd_init();
