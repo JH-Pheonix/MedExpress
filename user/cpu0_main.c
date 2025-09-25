@@ -67,7 +67,7 @@ int core0_main(void)
         // if (MAX30102_data_ready(&MAX30102))
         // {
         MAX30102_read_fifo(&MAX30102);
-        printf("%d, %d\n", MAX30102.red, MAX30102.ir);
+        printf("%u, %u\n", MAX30102.red, MAX30102.ir);
         // }
         // // stp23l_pop_frame(&lidar1, &lidar1_frame);
         // // stp23l_pop_frame(&lidar2, &lidar2_frame);

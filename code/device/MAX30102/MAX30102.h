@@ -80,9 +80,9 @@ typedef enum
     REG_FIFO_DATA,
     REG_FIFO_CONFIG,
     REG_MODE_CONFIG,
-    REG_SPO2_CONFIG, // 0x0A
-    REG_LED1_PA = 0x0C,
-    REG_LED2_PA,
+    REG_SPO2_CONFIG,    // 0x0A
+    REG_LED1_PA = 0x0C, // Red 红光 LED
+    REG_LED2_PA,        // IR 红外 LED
     REG_DIE_TEMP_INT = 0X1F,
     REG_DIE_TEMP_FRAC = 0x20,
     REG_DIE_TEMP_CONFIG,
@@ -94,6 +94,7 @@ typedef struct
     soft_iic_info_struct MAX30102_iic_obj;
     vuint32 red;
     vuint32 ir;
+    MAX30102_mode_e mode;
 } MAX30102_obj_t;
 
 MAX30102_obj_t MAX30102_init(gpio_pin_enum scl_pin, gpio_pin_enum sda_pin);
