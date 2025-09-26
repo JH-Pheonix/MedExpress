@@ -22,7 +22,7 @@ vuint8 status2 = 4;
 
 control_running_mode_e curr_state = WAITING_ANGLE;
 
-float control_angle_pid()
+float pid_angle_control()
 {
     // if (g_euler_angle.yaw > 180.0f)
     //     g_euler_angle.yaw -= 360.0f;
@@ -34,7 +34,7 @@ float control_angle_pid()
     return angle_out;
 }
 
-float control_pos_pid(int16 distance, float pos_tar)
+float pid_pos_control(int16 distance, float pos_tar)
 {
     float pos_out = pid_position(&pos_pid, distance, pos_tar);
     return pos_out;
@@ -135,8 +135,8 @@ vuint8 control_pid_pos(stp23l_obj_t *lidar, motor_obj_t *motor_a, motor_obj_t *m
         motor_set_pwm(motor_b, 0);
         return 0; // 鍒拌揪
     }
-    float turn_diff = control_angle_pid();
-    float motor_vel = control_pos_pid(lidar_frame.points[11].distance + 10, pos_target);
+    float turn_diff = pid_angle_control();
+    float motor_vel = pid_pos_control(lidar_frame.points[11].distance + 10, pos_target);
     motor_set_pwm(motor_a, -motor_vel - turn_diff);
     motor_set_pwm(motor_b, motor_vel - turn_diff);
     return 1;
@@ -195,7 +195,7 @@ void move_guandao(float target_pos, int Dir_now)
             break;
         if (Dir_now == Dir_right && position_Y > target_pos)
             break;
-        float turn_diff = control_angle_pid();
+        float turn_diff = pid_angle_control();
         float motor_vel = 6500 - move_mode * 1000;
         open_dir_motor(Dir_now, motor_vel, turn_diff);
     }

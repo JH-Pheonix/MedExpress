@@ -55,36 +55,36 @@ void core1_main(void)
     data_camera = 13;
     while (1)
     {
-        while (curr_state != RUNNING_GUANDAO)
-            system_delay_ms(10);
-        path_work(0, 4);
-        while (data_camera == 0)
-            system_delay_ms(10);
-        system_delay_ms(1000);
-        if (data_camera / 10 == 1)
-        {
-            path_work(4, 1);
-            adjust_tof();
-            system_delay_ms(2000);
-        }
-        else
-            path_work(4, 3);
-        if (data_camera / 10 == 1)
-            path_work(1, 3);
-        else
-        {
-            path_work(3, 1);
-            adjust_tof();
-            system_delay_ms(2000);
-        }
-        if (data_camera / 10 == 1)
-            path_work(3, 0);
-        else
-            path_work(1, 0);
-        if (data_camera == 31)
-            data_camera = 13;
-        else
-            data_camera = 31;
+        // while (curr_state != RUNNING_GUANDAO)
+        //     system_delay_ms(10);
+        // path_work(0, 4);
+        // while (data_camera == 0)
+        //     system_delay_ms(10);
+        // system_delay_ms(1000);
+        // if (data_camera / 10 == 1)
+        // {
+        //     path_work(4, 1);
+        //     adjust_tof();
+        //     system_delay_ms(2000);
+        // }
+        // else
+        //     path_work(4, 3);
+        // if (data_camera / 10 == 1)
+        //     path_work(1, 3);
+        // else
+        // {
+        //     path_work(3, 1);
+        //     adjust_tof();
+        //     system_delay_ms(2000);
+        // }
+        // if (data_camera / 10 == 1)
+        //     path_work(3, 0);
+        // else
+        //     path_work(1, 0);
+        // if (data_camera == 31)
+        //     data_camera = 13;
+        // else
+        //     data_camera = 31;
         // data_camera=0;
     }
 }
