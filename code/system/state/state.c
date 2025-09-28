@@ -135,7 +135,7 @@ static void handle_nurse_qrcode(vuint16 nurse_qrcode)
 
 static void handle_arm(vuint8 drug)
 {
-    emm42_position_mode_cmd(&emm42_1, 0, 1, 600, 0, 6 * 3200, 0, 0);
+    emm42_position_mode_cmd(&emm42_1, 0, 0, 1500, 245, 6 * 3200, 0, 0);
     emm42_send_cmd(&emm42_1);
     system_delay_ms(500);
 
@@ -157,6 +157,6 @@ static void handle_arm(vuint8 drug)
     servo_set_angle(&servo_left, 180);
     servo_set_angle(&servo_right, 0);
 
-    emm42_position_mode_cmd(&emm42_1, 0, 0, 600, 0, 6 * 3200, 0, 0);
+    emm42_position_mode_cmd(&emm42_1, 0, 0, 1500, 245, 6 * 3200, 0, 0);
     emm42_send_cmd(&emm42_1);
 }
