@@ -80,6 +80,9 @@ IFX_INTERRUPT(cc61_pit_ch1_isr, CCU6_1_CH1_INT_VECTAB_NUM, CCU6_1_CH1_ISR_PRIORI
 {
     interrupt_global_enable(0); // 开启中断嵌套
     pit_clear_flag(CCU61_CH1);
+
+    MAX30102_read_fifo(&MAX30102);
+    printf("%u\n", MAX30102.ir);
 }
 // **************************** PIT中断函数 ****************************
 
