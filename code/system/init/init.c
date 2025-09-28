@@ -32,19 +32,6 @@ void system_init(void)
     // emm42_1 = emm42_init(UART_5, UART5_RX_P22_3, UART5_TX_P22_2, 115200, EMM42_CHKSUM_CONST_6B);
 
     // system_delay_ms(1000);
-    // emm42_position_mode_cmd(&emm42_1, 0, 1, 600, 0, 6 * 3200, 0, 0);
-    // emm42_send_cmd(&emm42_1);
-    // system_delay_ms(500);
-
-    // servo_set_angle(&servo_left, 90);
-    // servo_set_angle(&servo_right, 90);
-
-    // system_delay_ms(2000);
-    // servo_set_angle(&servo_left, 180);
-    // servo_set_angle(&servo_right, 0);
-
-    // emm42_position_mode_cmd(&emm42_1, 0, 0, 600, 0, 6 * 3200, 0, 0);
-    // emm42_send_cmd(&emm42_1);
 
     // while (1)
     //     ;
@@ -77,6 +64,6 @@ void system_init(void)
     // pit_ms_init(CCU61_CH0, PIT_CONTROL_T);
     // pit_enable(CCU61_CH0);
 
-    pit_ms_init(CCU61_CH1, 10);
-    pit_enable(CCU61_CH1);
+    // pit_ms_init(CCU61_CH1, 10);
+    // pit_enable(CCU61_CH1);
 }

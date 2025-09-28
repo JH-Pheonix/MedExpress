@@ -3,12 +3,13 @@
 
 maixcam_message_t data;
 
-static vuint64 parse_payload(vuint8 cmd, vuint8 *payload, vuint8 len)
+static vuint64 parse_payload(maixcam_obj_t *maixcam, vuint8 cmd, vuint8 *payload, vuint8 len)
 {
     switch (cmd)
     {
     case 0x00:
     {
+        maixcam->receive_flag = 1;
         if (len == 1)
         {
             return (vuint64)payload[0];
@@ -17,6 +18,7 @@ static vuint64 parse_payload(vuint8 cmd, vuint8 *payload, vuint8 len)
     }
     case 0x01:
     {
+        maixcam->receive_flag = 1;
         vuint64 v = 0;
         for (int i = 0; i < len; i++)
             v = (v << 8) | (vuint64)payload[i];
@@ -47,6 +49,7 @@ maixcam_obj_t maixcam_uart_init(uart_index_enum uartn, uart_rx_pin_enum rx_pin, 
 
     memset(maixcam.rx_buf, 0, MAIXCAM_RX_BUF_SIZE);
     maixcam.data_cnt = 0;
+    maixcam.receive_flag = 0;
 
     data.cmd = 0;
     data.len = 0;
@@ -144,7 +147,7 @@ void maixcam_uart_handler(maixcam_obj_t *maixcam)
                 data.cmd = maixcam->rx_buf[1];
                 data.len = len;
 
-                data.data = parse_payload(data.cmd, &maixcam->rx_buf[3], data.len);
+                data.data = parse_payload(maixcam, data.cmd, &maixcam->rx_buf[3], data.len);
 
                 // 移除已解析的帧
                 if (maixcam->data_cnt > need)
@@ -176,9 +179,11 @@ maixcam_message_t maixcam_pop_data()
     return data;
 }
 
-void maixcam_clear()
+void maixcam_clear(maixcam_obj_t *maixcam)
 {
     data.cmd = 0;
     data.len = 0;
     data.data = 0;
+
+    maixcam->receive_flag = 0;
 }
