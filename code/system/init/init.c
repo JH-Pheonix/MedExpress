@@ -26,30 +26,16 @@ MAX30102_obj_t MAX30102;
 
 void system_init(void)
 {
-    servo_left = servo_init(ATOM1_CH2_P33_11, 50, 0, 0.5, 2.5, 180);
-    servo_right = servo_init(ATOM3_CH1_P33_5, 50, 0, 0.5, 2.5, 180); // 50Hz, 0.5ms~2.5ms, 360度
+    // servo_left = servo_init(ATOM1_CH2_P33_11, 50, 0, 0.5, 2.5, 180);
+    // servo_right = servo_init(ATOM3_CH1_P33_5, 50, 0, 0.5, 2.5, 180); // 50Hz, 0.5ms~2.5ms, 360度
 
-    emm42_1 = emm42_init(UART_5, UART5_RX_P22_3, UART5_TX_P22_2, 115200, EMM42_CHKSUM_CONST_6B);
+    // emm42_1 = emm42_init(UART_5, UART5_RX_P22_3, UART5_TX_P22_2, 115200, EMM42_CHKSUM_CONST_6B);
 
-    system_delay_ms(1000);
-    emm42_position_mode_cmd(&emm42_1, 0, 1, 600, 0, 6 * 3200, 0, 0);
-    emm42_send_cmd(&emm42_1);
-    system_delay_ms(500);
+    // system_delay_ms(1000);
 
-    servo_set_angle(&servo_left, 90);
-    servo_set_angle(&servo_right, 90);
-
-    system_delay_ms(2000);
-    servo_set_angle(&servo_left, 180);
-    servo_set_angle(&servo_right, 0);
-
-
-    emm42_position_mode_cmd(&emm42_1, 0, 0, 600, 0, 6 * 3200, 0, 0);
-    emm42_send_cmd(&emm42_1);
-
-    while (1)
-        ;
-    // MAX30102 = MAX30102_init(P13_0, P13_1);
+    // while (1)
+    //     ;
+    MAX30102 = MAX30102_init(P13_0, P14_6, MODE_HR_ONLY);
 
     // lcd_init();
 
@@ -77,4 +63,7 @@ void system_init(void)
     // control_init();
     // pit_ms_init(CCU61_CH0, PIT_CONTROL_T);
     // pit_enable(CCU61_CH0);
+
+    // pit_ms_init(CCU61_CH1, 10);
+    // pit_enable(CCU61_CH1);
 }

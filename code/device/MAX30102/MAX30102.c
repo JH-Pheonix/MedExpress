@@ -1,6 +1,6 @@
 #include "MAX30102.h"
 
-MAX30102_obj_t MAX30102_init(gpio_pin_enum scl_pin, gpio_pin_enum sda_pin)
+MAX30102_obj_t MAX30102_init(gpio_pin_enum scl_pin, gpio_pin_enum sda_pin, MAX30102_mode_e mode)
 {
     MAX30102_obj_t MAX30102_obj;
 
@@ -16,7 +16,8 @@ MAX30102_obj_t MAX30102_init(gpio_pin_enum scl_pin, gpio_pin_enum sda_pin)
     MAX30102_reset(&MAX30102_obj);
     system_delay_ms(100); // 复位后等待 100ms
 
-    MAX30102_config_mode(&MAX30102_obj, MODE_HR_ONLY);
+    MAX30102_obj.mode = mode;
+    MAX30102_config_mode(&MAX30102_obj);
     MAX30102_config_spo2(&MAX30102_obj);
     MAX30102_config_fifo(&MAX30102_obj);
     MAX30102_config_led(&MAX30102_obj);
@@ -36,27 +37,41 @@ void MAX30102_reset(MAX30102_obj_t *MAX30102_obj)
 void MAX30102_read_fifo(MAX30102_obj_t *MAX30102_obj)
 {
     vuint8 fifo_data[6];
-    soft_iic_read_8bit_registers(&MAX30102_obj->MAX30102_iic_obj, REG_FIFO_DATA, fifo_data, 6);
-    MAX30102_obj->ir = ((vuint32)fifo_data[0] << 16) | ((vuint32)fifo_data[1] << 8) | (vuint32)fifo_data[2];
-    MAX30102_obj->red = ((vuint32)fifo_data[3] << 16) | ((vuint32)fifo_data[4] << 8) | (vuint32)fifo_data[5];
+    switch (MAX30102_obj->mode)
+    {
+    case MODE_HR_ONLY:
+        soft_iic_read_8bit_registers(&MAX30102_obj->MAX30102_iic_obj, REG_FIFO_DATA, fifo_data, 3);
+        MAX30102_obj->ir = ((vuint32)fifo_data[0] << 16) | ((vuint32)fifo_data[1] << 8) | (vuint32)fifo_data[2];
+        MAX30102_obj->red = 0;
+        // printf("111111111\n");
+        break;
+    case MODE_SPO2_HR:
+        soft_iic_read_8bit_registers(&MAX30102_obj->MAX30102_iic_obj, REG_FIFO_DATA, fifo_data, 6);
+        MAX30102_obj->ir = ((vuint32)fifo_data[0] << 16) | ((vuint32)fifo_data[1] << 8) | (vuint32)fifo_data[2];
+        MAX30102_obj->red = ((vuint32)fifo_data[3] << 16) | ((vuint32)fifo_data[4] << 8) | (vuint32)fifo_data[5];
+        // printf("222222222\n");
+        break;
+    default:
+        break;
+    }
 }
 
-void MAX30102_config_mode(MAX30102_obj_t *MAX30102_obj, MAX30102_mode_e mode)
+void MAX30102_config_mode(MAX30102_obj_t *MAX30102_obj)
 {
-    soft_iic_write_8bit_register(&MAX30102_obj->MAX30102_iic_obj, REG_MODE_CONFIG, mode);
+    soft_iic_write_8bit_register(&MAX30102_obj->MAX30102_iic_obj, REG_MODE_CONFIG, MAX30102_obj->mode);
 }
 
 void MAX30102_config_spo2(MAX30102_obj_t *MAX30102_obj)
 {
-    vuint8 spo2_config = SPO2_ADC_RANGE_8192 |
-                         SPO2_SAMPLE_RATE_100 |
+    vuint8 spo2_config = SPO2_ADC_RANGE_2048 |
+                         SPO2_ADC_RANGE_16384 |
                          LED_PULSE_WIDTH_411US;
     soft_iic_write_8bit_register(&MAX30102_obj->MAX30102_iic_obj, REG_SPO2_CONFIG, spo2_config);
 }
 
 void MAX30102_config_fifo(MAX30102_obj_t *MAX30102_obj)
 {
-    vuint8 fifo_config = SAMPLE_AVERAGING_4X |  // 4 个数据取平均
+    vuint8 fifo_config = SAMPLE_AVERAGING_1X |  // 4 个数据取平均
                          FIFO_ROLLOVER_ENABLE | // 满了继续覆盖
                          FIFO_ALMOST_FULL_2;    // 剩 2 个空间时中断
     soft_iic_write_8bit_register(&MAX30102_obj->MAX30102_iic_obj, REG_FIFO_CONFIG, fifo_config);
@@ -65,7 +80,7 @@ void MAX30102_config_fifo(MAX30102_obj_t *MAX30102_obj)
 
 void MAX30102_config_led(MAX30102_obj_t *MAX30102_obj)
 {
-    soft_iic_write_8bit_register(&MAX30102_obj->MAX30102_iic_obj, REG_LED1_PA, LED_BRIGHTNESS_MEDIUM);
+    soft_iic_write_8bit_register(&MAX30102_obj->MAX30102_iic_obj, REG_LED1_PA, LED_BRIGHTNESS_HIGH);
     soft_iic_write_8bit_register(&MAX30102_obj->MAX30102_iic_obj, REG_LED2_PA, LED_BRIGHTNESS_MAX);
 }
 
@@ -76,12 +91,4 @@ vuint8 MAX30102_data_ready(MAX30102_obj_t *MAX30102_obj)
     wr_ptr = soft_iic_read_8bit_register(&MAX30102_obj->MAX30102_iic_obj, REG_FIFO_WR_PTR);
     vuint8 count = (wr_ptr - rd_ptr) & 0x1F;
     return count > 0;
-}
-
-vuint8 MAX30102_check_part_id(MAX30102_obj_t *MAX30102_obj)
-{
-
-    vuint8 part_id = soft_iic_read_8bit_register(&MAX30102_obj->MAX30102_iic_obj, 0xFF); // 读取器件 ID
-    printf("MAX30102 Part ID: 0x%02X\n", part_id);
-    return (part_id == MAX30102_PART_ID); // 检查器件 ID 是否正确, 正确则返回 1
 }

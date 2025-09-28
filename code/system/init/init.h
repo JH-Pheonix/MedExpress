@@ -32,6 +32,9 @@ extern emm42_obj_t emm42_1;
 
 extern MAX30102_obj_t MAX30102;
 
+extern servo_obj_t servo_left;
+extern servo_obj_t servo_right;
+
 #define lidar_left lidar2
 #define lidar_right lidar1
 #define lidar_front lidar3

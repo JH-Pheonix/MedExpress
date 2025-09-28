@@ -13,6 +13,7 @@ typedef enum
     EVENT_WAITTING_POS_ONE,   // 一号床机器姿态记录
     EVENT_WAITTING_POS_THREE, // 三号床机器姿态记录
     EVENT_NURSE,
+    EVENT_WATTING_QRCODE,
     EVENT_GO_TO_BED,
     EVENT_BED_ONE,
     EVENT_BED_THREE,

@@ -97,12 +97,11 @@ typedef struct
     MAX30102_mode_e mode;
 } MAX30102_obj_t;
 
-MAX30102_obj_t MAX30102_init(gpio_pin_enum scl_pin, gpio_pin_enum sda_pin);
+MAX30102_obj_t MAX30102_init(gpio_pin_enum scl_pin, gpio_pin_enum sda_pin, MAX30102_mode_e mode);
 void MAX30102_reset(MAX30102_obj_t *MAX30102_obj);
 vuint8 MAX30102_data_ready(MAX30102_obj_t *MAX30102_obj);
-vuint8 MAX30102_check_part_id(MAX30102_obj_t *MAX30102_obj);
 void MAX30102_read_fifo(MAX30102_obj_t *MAX30102_obj);
-void MAX30102_config_mode(MAX30102_obj_t *MAX30102_obj, MAX30102_mode_e mode);
+void MAX30102_config_mode(MAX30102_obj_t *MAX30102_obj);
 void MAX30102_config_spo2(MAX30102_obj_t *MAX30102_obj);
 void MAX30102_config_fifo(MAX30102_obj_t *MAX30102_obj);
 void MAX30102_config_led(MAX30102_obj_t *MAX30102_obj);

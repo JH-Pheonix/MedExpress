@@ -47,6 +47,7 @@
 
 stp23l_frame_t lidar1_frame;
 stp23l_frame_t lidar2_frame;
+
 // 本例程是开源库空工程 可用作移植或者测试各类内外设
 // 本例程是开源库空工程 可用作移植或者测试各类内外设
 // 本例程是开源库空工程 可用作移植或者测试各类内外设
@@ -66,8 +67,6 @@ int core0_main(void)
         system_delay_ms(10);
         // if (MAX30102_data_ready(&MAX30102))
         // {
-        MAX30102_read_fifo(&MAX30102);
-        printf("%u, %u\n", MAX30102.red, MAX30102.ir);
         // }
         // // stp23l_pop_frame(&lidar1, &lidar1_frame);
         // // stp23l_pop_frame(&lidar2, &lidar2_frame);
