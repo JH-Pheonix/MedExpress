@@ -41,6 +41,7 @@
 #include "pid_control.h"
 #include "asrpro.h"
 #include "init.h"
+#include "ppg_handler.h"
 
 // 对于TC系列默认是不支持中断嵌套的，希望支持中断嵌套需要在中断内使用 interrupt_global_enable(0); 来开启中断嵌套
 // 简单点说实际上进入中断后TC系列的硬件自动调用了 interrupt_global_disable(); 来拒绝响应任何的中断，因此需要我们自己手动调用 interrupt_global_enable(0); 来开启中断的响应。
@@ -81,8 +82,7 @@ IFX_INTERRUPT(cc61_pit_ch1_isr, CCU6_1_CH1_INT_VECTAB_NUM, CCU6_1_CH1_ISR_PRIORI
     interrupt_global_enable(0); // 开启中断嵌套
     pit_clear_flag(CCU61_CH1);
 
-    MAX30102_read_fifo(&MAX30102);
-    printf("%u\n", MAX30102.ir);
+    ppg_collect(&MAX30102);
 }
 // **************************** PIT中断函数 ****************************
 

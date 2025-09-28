@@ -63,8 +63,8 @@ void MAX30102_config_mode(MAX30102_obj_t *MAX30102_obj)
 
 void MAX30102_config_spo2(MAX30102_obj_t *MAX30102_obj)
 {
-    vuint8 spo2_config = SPO2_ADC_RANGE_8192 |
-                         SPO2_SAMPLE_RATE_100 |
+    vuint8 spo2_config = SPO2_ADC_RANGE_2048 |
+                         SPO2_ADC_RANGE_16384 |
                          LED_PULSE_WIDTH_411US;
     soft_iic_write_8bit_register(&MAX30102_obj->MAX30102_iic_obj, REG_SPO2_CONFIG, spo2_config);
 }
@@ -80,7 +80,7 @@ void MAX30102_config_fifo(MAX30102_obj_t *MAX30102_obj)
 
 void MAX30102_config_led(MAX30102_obj_t *MAX30102_obj)
 {
-    soft_iic_write_8bit_register(&MAX30102_obj->MAX30102_iic_obj, REG_LED1_PA, LED_BRIGHTNESS_MEDIUM);
+    soft_iic_write_8bit_register(&MAX30102_obj->MAX30102_iic_obj, REG_LED1_PA, LED_BRIGHTNESS_HIGH);
     soft_iic_write_8bit_register(&MAX30102_obj->MAX30102_iic_obj, REG_LED2_PA, LED_BRIGHTNESS_MAX);
 }
 
