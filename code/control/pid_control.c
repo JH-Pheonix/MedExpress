@@ -44,9 +44,9 @@ void checking_tof(float motor_vel, float ok_area)
     while (1)
     {
         if (status2)
-            status2 = control_pid_pos_2(&lidar1, x_tar, Dir_x, motor_vel, ok_area);
+            status2 = control_pid_pos_2(&lidar_right, x_tar, Dir_x, motor_vel, ok_area);
         else if (status1)
-            status1 = control_pid_pos_2(&lidar2, y_tar, Dir_y, motor_vel, ok_area);
+            status1 = control_pid_pos_2(&lidar_left, y_tar, Dir_y, motor_vel, ok_area);
 
         if (status1 == 0 && status2 == 0)
         {
@@ -335,7 +335,7 @@ void control_handler()
         motor_set_pwm(&motor4, 0);
         break;
     case RUNNING_X:
-        /*status = control_pid_pos(&lidar1, &motor3, &motor4, x_tar);
+        /*status = control_pid_pos(&lidar_right, &motor3, &motor4, x_tar);
         if (status == 0)
         {
             curr_state = RUNNING_Y;
@@ -348,9 +348,9 @@ void control_handler()
         break;
     case RUNNING_Y:
         /*if (status2)
-           status2 = control_pid_pos_2(&lidar1, x_tar, Dir_x,550);
+           status2 = control_pid_pos_2(&lidar_right, x_tar, Dir_x,550);
         else if (status1)
-            status1 = control_pid_pos_2(&lidar2, y_tar, Dir_y,550);*/
+            status1 = control_pid_pos_2(&lidar_left, y_tar, Dir_y,550);*/
 
         if (status1 == 0 && status2 == 0)
         {
@@ -362,7 +362,7 @@ void control_handler()
             motor_set_pwm(&motor4, 0);
             curr_state = ROTATING;
         }
-        /*status = control_pid_pos(&lidar2, &motor2, &motor1, y_tar);
+        /*status = control_pid_pos(&lidar_left, &motor2, &motor1, y_tar);
         if (status == 0)
         {
             curr_state = ROTATING;
@@ -379,9 +379,9 @@ void control_handler()
     case CHECKING:
 
         /*if (status2)
-           status2 = control_pid_pos_2(&lidar1, x_tar, Dir_x,550);
+           status2 = control_pid_pos_2(&lidar_right, x_tar, Dir_x,550);
         else if (status1)
-            status1 = control_pid_pos_2(&lidar2, y_tar, Dir_y,550);*/
+            status1 = control_pid_pos_2(&lidar_left, y_tar, Dir_y,550);*/
 
         if (status1 == 0 && status2 == 0)
         {

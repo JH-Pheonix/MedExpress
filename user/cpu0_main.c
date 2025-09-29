@@ -45,8 +45,8 @@
 #pragma section all "cpu0_dsram"
 // 将本语句与#pragma section all restore语句之间的全局变量都放在CPU0的RAM中
 
-stp23l_frame_t lidar1_frame;
-stp23l_frame_t lidar2_frame;
+stp23l_frame_t lidar_right_frame;
+stp23l_frame_t lidar_left_frame;
 
 // 本例程是开源库空工程 可用作移植或者测试各类内外设
 // 本例程是开源库空工程 可用作移植或者测试各类内外设
@@ -68,11 +68,11 @@ int core0_main(void)
         // if (MAX30102_data_ready(&MAX30102))
         // {
         // }
-        // // stp23l_pop_frame(&lidar1, &lidar1_frame);
-        // // stp23l_pop_frame(&lidar2, &lidar2_frame);
+        // // stp23l_pop_frame(&lidar_right, &lidar_right_frame);
+        // // stp23l_pop_frame(&lidar_left, &lidar_left_frame);
 
-        // // lcd_show_int(0, 0, lidar1_frame.points[11].distance, 7);
-        // // lcd_show_int(8, 0, lidar2_frame.points[11].distance, 7);
+        // // lcd_show_int(0, 0, lidar_right_frame.points[11].distance, 7);
+        // // lcd_show_int(8, 0, lidar_left_frame.points[11].distance, 7);
         // if (keymsg.key == KEY_L)
         // {
         //     if (curr_state == WAITING_RUNNING)
@@ -90,9 +90,9 @@ int core0_main(void)
         //         curr_state = WAITING_RUNNING;
         //         angle_tar = g_euler_angle.yaw;
         //         stp23l_frame_t lidar_frame;
-        //         stp23l_pop_frame(&lidar1, &lidar_frame);
+        //         stp23l_pop_frame(&lidar_right, &lidar_frame);
         //         x_tar = lidar_frame.points[11].distance;
-        //         stp23l_pop_frame(&lidar2, &lidar_frame);
+        //         stp23l_pop_frame(&lidar_left, &lidar_frame);
         //         y_tar = lidar_frame.points[11].distance;
         //     }
         // }
@@ -114,11 +114,11 @@ int core0_main(void)
         // lcd_show_string(0, 4, "yaw:");
         // lcd_show_float(7, 4, g_euler_angle.yaw, 4, 3);
         // stp23l_frame_t tmp;
-        // stp23l_pop_frame(&lidar1, &tmp);
-        // lcd_show_string(0, 5, "lidar1:");
+        // stp23l_pop_frame(&lidar_right, &tmp);
+        // lcd_show_string(0, 5, "lidar_right:");
         // lcd_show_int(7, 5, tmp.points[11].distance, 6);
-        // lcd_show_string(0, 6, "lidar2:");
-        // stp23l_pop_frame(&lidar2, &tmp);
+        // lcd_show_string(0, 6, "lidar_left:");
+        // stp23l_pop_frame(&lidar_left, &tmp);
         // lcd_show_int(7, 6, tmp.points[11].distance, 6);
 
         // lcd_show_string(0, 7, "PosX:");

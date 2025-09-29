@@ -208,7 +208,8 @@ IFX_INTERRUPT(uart4_tx_isr, UART4_INT_VECTAB_NUM, UART4_TX_INT_PRIO)
 
 IFX_INTERRUPT(uart4_rx_isr, UART4_INT_VECTAB_NUM, UART4_RX_INT_PRIO)
 {
-    interrupt_global_enable(0); // 开启中断嵌套
+    interrupt_global_enable(0);             // 开启中断嵌套
+    stp23l_receiver_callback(&lidar_front); // STP23L激光雷达串口回调
 }
 
 IFX_INTERRUPT(uart5_tx_isr, UART5_INT_VECTAB_NUM, UART5_TX_INT_PRIO)
@@ -218,7 +219,8 @@ IFX_INTERRUPT(uart5_tx_isr, UART5_INT_VECTAB_NUM, UART5_TX_INT_PRIO)
 
 IFX_INTERRUPT(uart5_rx_isr, UART5_INT_VECTAB_NUM, UART5_RX_INT_PRIO)
 {
-    interrupt_global_enable(0); // 开启中断嵌套
+    interrupt_global_enable(0);             // 开启中断嵌套
+    stp23l_receiver_callback(&lidar_right); // STP23L激光雷达串口回调
 }
 
 IFX_INTERRUPT(uart6_tx_isr, UART6_INT_VECTAB_NUM, UART6_TX_INT_PRIO)
@@ -228,8 +230,8 @@ IFX_INTERRUPT(uart6_tx_isr, UART6_INT_VECTAB_NUM, UART6_TX_INT_PRIO)
 
 IFX_INTERRUPT(uart6_rx_isr, UART6_INT_VECTAB_NUM, UART6_RX_INT_PRIO)
 {
-    interrupt_global_enable(0);        // 开启中断嵌套
-    stp23l_receiver_callback(&lidar2); // STP23L激光雷达串口回调
+    interrupt_global_enable(0);            // 开启中断嵌套
+    stp23l_receiver_callback(&lidar_left); // STP23L激光雷达串口回调
 }
 
 IFX_INTERRUPT(uart8_tx_isr, UART8_INT_VECTAB_NUM, UART8_TX_INT_PRIO)
@@ -239,8 +241,7 @@ IFX_INTERRUPT(uart8_tx_isr, UART8_INT_VECTAB_NUM, UART8_TX_INT_PRIO)
 
 IFX_INTERRUPT(uart8_rx_isr, UART8_INT_VECTAB_NUM, UART8_RX_INT_PRIO)
 {
-    interrupt_global_enable(0);        // 开启中断嵌套
-    stp23l_receiver_callback(&lidar1); // STP23L激光雷达串口回调
+    interrupt_global_enable(0); // 开启中断嵌套
 }
 
 IFX_INTERRUPT(uart9_tx_isr, UART9_INT_VECTAB_NUM, UART9_TX_INT_PRIO)
